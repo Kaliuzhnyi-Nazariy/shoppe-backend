@@ -1,5 +1,5 @@
-import app from "./app.ts"
+import app from "./app.ts";
 
-apo.listen(3001, ()=>{
-  console.log("server is running!")
-})
+app.listen(3001, () => {
+  console.log("server is running!");
+});
