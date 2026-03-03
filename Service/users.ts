@@ -1,7 +1,14 @@
-export const createUser = async () => {};
+const createUser = async () => {};
 
-export const updateUser = async () => {};
+const updateUser = async () => {};
 
-export const getUser = async (userId: string) => {};
+const getUser = async (userId: string) => {};
 
-export const deleteUser = async (userId: string) => {};
+const deleteUser = async (userId: string) => {};
+
+export default {
+  createUser,
+  updateUser,
+  getUser,
+  deleteUser,
+};
