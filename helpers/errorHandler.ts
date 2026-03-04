@@ -17,3 +17,5 @@ const errorHandler = (code: number; message = errorMessages[code])=> {
   (error as CustomError).status = code;
   return error;
 }
+
+export default {errorHandler}
