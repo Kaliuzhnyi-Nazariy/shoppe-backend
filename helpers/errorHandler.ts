@@ -1,3 +1,5 @@
+import type {CustomError} from "../Interfaces/customError.ts"
+
 const errorMessages: Record<number, string> = {
   400: "Bad request!",
   401: "Unauthorized!",
@@ -6,10 +8,6 @@ const errorMessages: Record<number, string> = {
   409: "Conflict!",
   500: "Server Error",
 };
-
-export type CustomeError extends Error = {
-  status: number;
-}
 
 const errorHandler = (code: number; message = errorMessages[code])=> {
   const error = new Error();
