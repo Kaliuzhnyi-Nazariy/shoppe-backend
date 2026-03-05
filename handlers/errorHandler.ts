@@ -1,4 +1,4 @@
-import type {CustomError} from "../Interfaces/"
+import type {CustomError} from "../Interfaces/customError.ts"
 
 const errorHandler = (error: CustomError, req: Request, res:Response, next: NextFunction) => {
   const {status = 500, message = "Server error"} = error;
