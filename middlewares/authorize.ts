@@ -1,6 +1,6 @@
 import helper from "../helpers"
-
-const authorize = (alowedRoles: string[]) => (req: AuthRequest, res: Response, next:NextFunction) => {
+import type {CustomRequest} from "../Interfaces/customRequest.ts"
+const authorize = (alowedRoles: string[]) => (req: CustomRequest, res: Response, next:NextFunction) => {
   if (!req.user) return next(helper.errorHandler(401));
   
   if(!alowedRoles.includes(req.user.role)) {return next(helper.errorHandler(403))}
