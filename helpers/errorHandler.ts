@@ -1,4 +1,4 @@
-import type {CustomError} from "../Interfaces/customError.ts"
+import type { CustomError } from "../interfaces/customError";
 
 const errorMessages: Record<number, string> = {
   400: "Bad request!",
@@ -9,11 +9,11 @@ const errorMessages: Record<number, string> = {
   500: "Server Error",
 };
 
-const errorHandler = (code: number; message = errorMessages[code])=> {
+const errorHandler = (code: number, message = errorMessages[code]) => {
   const error = new Error();
   error.message = message;
   (error as CustomError).status = code;
   return error;
-}
+};
 
-export default {errorHandler}
+export default errorHandler;
