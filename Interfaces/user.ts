@@ -3,11 +3,20 @@ export interface IUser {
   firstName: string;
   lastName: string;
   displayName: string;
-  email: string;
-  password: string;
   role: "admin" | "customer";
+  password: string;
+  email: string;
+
+  orders: [];
+  addresses: [];
+  cart: [];
 }
 
 export type SignIn = Pick<IUser, "email" | "password">;
 
-export type SignUp = Omit<IUser, "id" | "role">;
+export type SignUp = Omit<
+  IUser,
+  "id" | "role" | "orders" | "addresses" | "cart"
+> & {
+  role?: "admin" | "customer";
+};
