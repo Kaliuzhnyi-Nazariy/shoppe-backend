@@ -1,50 +1,49 @@
-import type {Request, Response, NextFunction} from "express"
-import userService from "../Service/users.ts"
+import type { Request, Response, NextFunction } from "express";
+import userService from "../service/users";
+import { CustomRequest } from "../interfaces/customRequest";
+import { errorHandler } from "../helpers";
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    await userService.createUser()
-  } catch(error){next(error)}
-};
-
-const getUser = async (req: Request, res: Response, next: NextFunction) => {
+const getUser = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction,
+) => {
   // get user id
-  // const {userId} = req.user
-  
+  const user = req.user;
+
+  if (!user) throw errorHandler(401);
+
   try {
-    //const data = await userService.getUser(userId)
-    
-    //return data.data
-  } catch(error) {
-    next(error)
+    const data = await userService.getUser(user.id);
+    res.status(200).json(data);
+  } catch (error) {
+    next(error);
   }
 };
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    // get user id
+  // get user id
   // const {userId} = req.user
-  
+
   //get req.body
   // const {} = req.body;
   try {
     //const data = await userService.updateUser(userId)
-    
     //return data.data
-  } catch(error) {
-    next(error)
+  } catch (error) {
+    next(error);
   }
 };
 
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    // get user id
+  // get user id
   // const {userId} = req.user
-  
+
   try {
     // await userService.deleteUser(userId)
-  } catch(error) {
-    next(error)
+  } catch (error) {
+    next(error);
   }
 };
 
-
-export default { createUser, getUser, updateUser, deleteUser }
+export default { getUser, updateUser, deleteUser };
