@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { authorize, isAuthenticated, validateBody } from "../middlewares";
 import productsService from "../controllers/products";
-import { addAndUpdateProductValidation } from "../validation/product.validation";
+import {
+  addAndUpdateProductValidation,
+  updateAmpuntOfProduct,
+} from "../validation/product.validation";
 
 const router = Router();
 
@@ -36,6 +39,7 @@ router.patch(
   "/amount/:productId",
   isAuthenticated,
   authorize(["admin"]),
+  validateBody(updateAmpuntOfProduct),
   productsService.updateProductAmount,
 );
 
