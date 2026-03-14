@@ -8,10 +8,10 @@ export const addAndUpdateProductValidation = z.object({
     .min(20, "Description should be at least 20 characters long"),
   additionalInformation: z.string().optional(),
   price: z.number(),
-  amount: z.number(),
+  amount: z.number().optional(),
   photos: z.array(z.string()).optional(),
 });
 
 export const updateAmpuntOfProduct = z.object({
-  amount: z.number(),
+  amount: z.number().min(0, "Products amount cannot be less then 0"),
 });
