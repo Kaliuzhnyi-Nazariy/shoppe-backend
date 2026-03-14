@@ -3,11 +3,18 @@ import { IAddProduct, IProduct } from "../interfaces/products";
 import { prisma } from "../lib/prisma";
 
 const getProducts = async () => {
-  return prisma.product.findMany();
+  // return prisma.product.findMany({ where: { title: "" }  });
+  return await prisma.product.findMany();
 };
 
 const getProductById = async (productId: string) => {
-  return prisma.product.findUnique({ where: { id: productId } });
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+
+  if (product) {
+    return product;
+  } else {
+    throw errorHandler(404, "Product is not found");
+  }
 };
 
 const addProducts = async (data: IAddProduct) => {
