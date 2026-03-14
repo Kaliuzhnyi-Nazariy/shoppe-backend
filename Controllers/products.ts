@@ -63,9 +63,6 @@ const updateProductAmount = async (
   // get product id
   const id = getProductParam(req);
 
-  if (req.body.amount < 0)
-    return next(errorHandler(400, "Products amount cannot be less then 0"));
-
   try {
     await productsService.updateProductAmount(id, req.body.amount);
     res.sendStatus(204);
@@ -84,6 +81,8 @@ const archiveProduct = async (
 
   try {
     await productsService.archiveProduct(id);
+
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }
@@ -100,6 +99,7 @@ const deleteProduct = async (
 
   try {
     await productsService.deleteProduct(id);
+    res.sendStatus(204)
   } catch (error) {
     next(error);
   }
