@@ -6,7 +6,7 @@ import {
   resetPasswordValidation,
   signInValidation,
   userSignupValidation,
-} from "../validation/user.validation";
+} from "../validation/auth.validation";
 
 const router = Router();
 
