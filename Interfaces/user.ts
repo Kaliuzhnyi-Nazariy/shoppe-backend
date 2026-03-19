@@ -20,3 +20,8 @@ export type SignUp = Omit<
 > & {
   role?: "admin" | "customer";
 };
+
+export type UpdateUser = Pick<
+  IUser,
+  "id" | "firstName" | "lastName" | "displayName" | "email" | "password"
+>;
