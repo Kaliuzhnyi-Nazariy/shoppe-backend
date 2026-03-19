@@ -17,9 +17,11 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = await authService.signIn(req.body);
+    // const { token, role } = await authService.signIn(req.body);
 
     res.cookie("token", token, cookieSettings);
 
+    // res.status(200).json({ role });
     res.sendStatus(200);
   } catch (error) {
     next(error);

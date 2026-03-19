@@ -114,6 +114,7 @@ describe("authService.signIn", () => {
     expect(jwt.sign).toHaveBeenCalled();
 
     expect(result).toEqual({ token: "mock_token" });
+    // expect(result).toEqual({ token: "mock_token", role: "customer" });
   });
 
   it("should throw error because user is not exist", async () => {

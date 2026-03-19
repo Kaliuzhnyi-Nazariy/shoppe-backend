@@ -54,7 +54,8 @@ const signUp = async ({
 const signIn = async ({
   email,
   password,
-}: SignIn): Promise<{ token: string }> => {
+}: // }: SignIn): Promise<{ token: string; role: "customer" | "admin" }> => {
+SignIn): Promise<{ token: string }> => {
   // check if user is exist in db
   const isUser = await prisma.user.findUnique({ where: { email } });
 
