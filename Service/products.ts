@@ -20,7 +20,6 @@ const getProductById = async (productId: string) => {
 const addProducts = async (data: IAddProduct) => {
   const {
     title,
-    amount,
     description,
     isArchived = false,
     price,
@@ -31,7 +30,7 @@ const addProducts = async (data: IAddProduct) => {
   const res = await prisma.product.create({
     data: {
       title,
-      amount,
+      amount: 0,
       description,
       isArchived,
       price,

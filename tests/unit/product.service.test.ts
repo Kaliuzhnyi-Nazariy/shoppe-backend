@@ -1,5 +1,5 @@
 import { ensureProductExists } from "../../helpers";
-import { IAddProduct, IProduct } from "../../interfaces/products";
+import { IAddProduct } from "../../interfaces/products";
 import { prisma } from "../../lib/prisma";
 import service from "../../service/products";
 
@@ -22,7 +22,7 @@ jest.mock("../../helpers", () => ({
 describe("productService.addProduct", () => {
   const productData: IAddProduct = {
     title: "Phone",
-    amount: 10,
+    // amount: 10,
     price: 249.99,
     description: "some description added",
     photos: ["img1.jpg"],

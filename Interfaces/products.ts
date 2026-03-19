@@ -29,6 +29,8 @@ export interface IProduct {
 
 export type IAddProduct = Omit<
   IProduct,
-  "photos" | "additionalInformation" | "isArchived" | "rate"
+  "amount" | "photos" | "additionalInformation" | "isArchived" | "rate"
 > &
-  Partial<Pick<IProduct, "photos" | "additionalInformation" | "isArchived">>;
+  Partial<
+    Pick<IProduct, "amount" | "photos" | "additionalInformation" | "isArchived">
+  >;
