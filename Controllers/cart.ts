@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { errorHandler, getUserData } from "../helpers";
 import service from "../service/cart";
-import { controllerWrapper } from "../handlers/";
+import { controllerWrapper } from "../helpers/";
 
 const getItemParam = (
   req: Request,

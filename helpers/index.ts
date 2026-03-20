@@ -4,6 +4,7 @@ import { ensureProductExists } from "./ensureProductExists";
 import { getProductParam } from "./getProductParam";
 import getUserData from "./getUser";
 import { ensureExists } from "./ensureExists";
+import { controllerWrapper } from "./controllerWrapper";
 
 export {
   errorHandler,
@@ -12,4 +13,5 @@ export {
   getProductParam,
   getUserData,
   ensureExists,
+  controllerWrapper,
 };
