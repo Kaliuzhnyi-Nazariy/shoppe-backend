@@ -5,7 +5,10 @@ import bcrypt from "bcryptjs";
 import { Prisma } from "../generated/prisma";
 
 const getUser = async (userId: string) => {
-  const res = await prisma.user.findUnique({ where: { id: userId } });
+  const res = await prisma.user.findUnique({
+    where: { id: userId },
+    omit: { password: true },
+  });
 
   if (!res) throw errorHandler(404, "User is not found");
 
