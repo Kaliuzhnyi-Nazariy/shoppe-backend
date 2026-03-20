@@ -177,5 +177,7 @@ model CartItem {
   user     User?   @relation(fields: [userId], references: [id])
   userId   String?
 
+  price Flot
+
   @@unique([cartId, productId])
 }
