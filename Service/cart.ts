@@ -3,16 +3,19 @@ import { AddCartItem } from "../interfaces/cart";
 import { prisma } from "../lib/prisma";
 
 const getCart = async (userId: string) => {
-  return prisma.cart.upsert({
+  const cart = await prisma.cart.upsert({
     where: { userId },
     update: {},
     create: { userId },
     include: {
       items: {
         include: { product: true },
+        omit: { cartId: true, productId: true },
       },
     },
   });
+
+  return { id: cart.id, items: cart.items };
   //   return prisma.cart.findUnique({ where: { userId } });
 };
 
@@ -24,7 +27,7 @@ const addToCart = async ({
   product: AddCartItem;
 }) => {
   if (product.quantity <= 0)
-    throw errorHandler(400, "Quantity must be grater than 0");
+    throw errorHandler(400, "Quantity must be greater than 0");
 
   const { id } = await prisma.cart.upsert({
     where: { userId },
@@ -94,10 +97,10 @@ const removeFromCart = async ({
     entityName: "Item",
   });
 
-  if (quantity >= item.quantity)
+  if (quantity > item.quantity)
     throw errorHandler(400, "Quantity must be lower than you have in cart");
 
-  if (item.quantity <= quantity) {
+  if (item.quantity === quantity) {
     return await prisma.cartItem.delete({
       where: {
         cartId_productId: {
@@ -140,9 +143,7 @@ const removeItemFromCart = async ({
     entityName: "Item",
   });
 
-  await prisma.cartItem.delete({ where: { id: item.id } });
-
-  return;
+  return await prisma.cartItem.delete({ where: { id: item.id } });
 };
 
 const cleanCart = async (userId: string) => {
@@ -154,6 +155,24 @@ const cleanCart = async (userId: string) => {
 
   await prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
 
+  const res = await prisma.cart.findUnique({
+    where: { userId },
+    include: {
+      items: true,
+    },
+  });
+
+  return { items: res?.items };
+};
+
+const deleteCart = async (userId: string) => {
+  const cart = await ensureExists({
+    model: prisma.cart,
+    where: { userId },
+    entityName: "Cart",
+  });
+
+  await prisma.cart.delete({ where: { id: cart.id } });
   return;
 };
 
@@ -163,4 +182,5 @@ export default {
   removeFromCart,
   removeItemFromCart,
   cleanCart,
+  deleteCart,
 };

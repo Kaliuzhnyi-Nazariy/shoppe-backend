@@ -30,8 +30,10 @@ const getCart = async (req: Request, res: Response, next: NextFunction) => {
 const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
 
-  await service.addToCart({ userId: id, product: req.body });
-  res.sendStatus(204);
+  const newCart = await service.addToCart({ userId: id, product: req.body });
+  res.status(200).json(newCart);
+  // const result = await service.addToCart({ userId: id, product: req.body });
+  // res.sendStatus(204);
   // try {
   // await service.addToCart({ userId: id, product: req.body });
   // res.sendStatus(204);
@@ -53,13 +55,14 @@ const reduceQuantity = async (
 
   const productId = getItemParam(req, res, next);
 
-  await service.removeFromCart({
+  const result = await service.removeFromCart({
     userId: id,
     productId,
     quantity: req.body.quantity,
   });
 
-  res.sendStatus(204);
+  res.status(200).json(result);
+  // res.sendStatus(204);
 };
 
 const removeItemFromCart = async (
@@ -81,7 +84,15 @@ const removeItemFromCart = async (
 const cleanCart = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
 
-  await service.cleanCart(id);
+  const result = await service.cleanCart(id);
+  // res.sendStatus(204);
+  res.status(200).json(result);
+};
+
+const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = getUserData(req);
+
+  await service.deleteCart(id);
   res.sendStatus(204);
 };
 // export default { getCart, addToCart, reduceQuantity };
@@ -92,4 +103,5 @@ export default {
   reduceQuantity: controllerWrapper(reduceQuantity),
   removeItemFromCart: controllerWrapper(removeItemFromCart),
   cleanCart: controllerWrapper(cleanCart),
+  deleteCart: controllerWrapper(deleteCart),
 };

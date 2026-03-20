@@ -25,6 +25,8 @@ router.post(
 
 router.delete("/item/:itemId", isAuthenticated, ctrl.removeItemFromCart);
 
-router.delete("/", isAuthenticated, ctrl.cleanCart);
+router.delete("/clear", isAuthenticated, ctrl.cleanCart);
+
+router.delete("/", isAuthenticated, ctrl.deleteCart);
 
 export default router;
