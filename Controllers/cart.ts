@@ -31,7 +31,7 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
 
   const newCart = await service.addToCart({ userId: id, product: req.body });
-  res.status(200).json(newCart);
+  res.status(201).json(newCart);
   // const result = await service.addToCart({ userId: id, product: req.body });
   // res.sendStatus(204);
   // try {
@@ -74,11 +74,11 @@ const removeItemFromCart = async (
 
   const productId = getItemParam(req, res, next);
 
-  await service.removeItemFromCart({
+  const result = await service.removeItemFromCart({
     userId: id,
     productId,
   });
-  res.sendStatus(204);
+  res.status(200).json(result);
 };
 
 const cleanCart = async (req: Request, res: Response, next: NextFunction) => {
