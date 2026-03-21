@@ -9,7 +9,18 @@ const getCart = async (userId: string) => {
     create: { userId },
     include: {
       items: {
-        include: { product: true },
+        include: {
+          product: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              photos: true,
+              rate: true,
+              reviewCount: true,
+            },
+          },
+        },
         omit: { cartId: true, productId: true },
       },
     },
@@ -65,6 +76,7 @@ const addToCart = async ({
       productId: product.productId,
       quantity: product.quantity,
       price: productDB.price,
+      userId: userId,
     },
   });
 
