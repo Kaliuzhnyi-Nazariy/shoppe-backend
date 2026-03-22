@@ -97,6 +97,13 @@ const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
 };
 // export default { getCart, addToCart, reduceQuantity };
 
+const addMany = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = getUserData(req);
+
+  const result = await service.addMany(id, req.body);
+  res.status(201).json(result);
+};
+
 export default {
   getCart: controllerWrapper(getCart),
   addToCart: controllerWrapper(addToCart),
@@ -104,4 +111,5 @@ export default {
   removeItemFromCart: controllerWrapper(removeItemFromCart),
   cleanCart: controllerWrapper(cleanCart),
   deleteCart: controllerWrapper(deleteCart),
+  addMany: controllerWrapper(addMany),
 };

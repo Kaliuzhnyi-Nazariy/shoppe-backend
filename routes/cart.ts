@@ -17,6 +17,13 @@ router.post(
 );
 
 router.post(
+  "/add/many",
+  isAuthenticated,
+  // validateBody(cartAddValidation),
+  ctrl.addMany,
+);
+
+router.post(
   "/remove/:itemId",
   isAuthenticated,
   validateBody(cartRemoveValidation),
