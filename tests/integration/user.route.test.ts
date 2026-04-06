@@ -65,7 +65,7 @@ describe("GET /user/me", () => {
 
     const res = await request(app)
       .get("/api/users/me")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.getUser).toHaveBeenCalledWith("user123");
     expect(res.status).toBe(200);
@@ -92,7 +92,7 @@ describe("GET /user/me", () => {
 
     const res = await request(app)
       .get("/api/users/me")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.getUser).toHaveBeenCalledWith("user123");
 
@@ -137,7 +137,7 @@ describe("PUT /api/users/update", () => {
     const res = await request(app)
       .put("/api/users/update")
       .send(updBody)
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.updateUser).toHaveBeenCalledWith({
       ...updBody,
@@ -174,7 +174,7 @@ describe("PUT /api/users/update", () => {
     const res = await request(app)
       .put("/api/users/update")
       .send(wrongUpdBody)
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
@@ -194,7 +194,7 @@ describe("PUT /api/users/update", () => {
 
     const res = await request(app)
       .put("/api/users/update")
-      .set("Cookie", `token=${token}`)
+      .set("authorization", `Bearer ${token}`)
       .send(updBody);
 
     expect(service.updateUser).toHaveBeenCalledWith({
@@ -218,7 +218,7 @@ describe("PUT /api/users/update", () => {
     const res = await request(app)
       .put("/api/users/update")
       .send(updBody)
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.updateUser).toHaveBeenCalledWith({
       ...updBody,
@@ -242,7 +242,7 @@ describe("DELETE /users/delete", () => {
 
     const res = await request(app)
       .delete("/api/users/delete")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.deleteUser).toHaveBeenCalledWith("user123");
     expect(res.status).toBe(204);
@@ -256,7 +256,7 @@ describe("DELETE /users/delete", () => {
 
     const res = await request(app)
       .delete("/api/users/delete")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.deleteUser).toHaveBeenCalledWith("user123");
     expect(res.status).toBe(404);

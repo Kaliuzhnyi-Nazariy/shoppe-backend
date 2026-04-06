@@ -80,7 +80,7 @@ describe("GET /cart/", () => {
 
     const res = await request(app)
       .get("/api/cart")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.getCart).toHaveBeenCalledWith("user123");
     expect(res.status).toBe(200);
@@ -93,7 +93,7 @@ describe("GET /cart/", () => {
 
     const res = await request(app)
       .get("/api/cart")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.getCart).toHaveBeenCalledWith("user123");
     expect(res.status).toBe(404);
@@ -123,14 +123,20 @@ describe("GET /cart/", () => {
 describe("POST /cart/add", () => {
   beforeEach(() => jest.clearAllMocks());
 
+  const req = async () => {
+    const res = await request(app)
+      .post("/api/cart/add")
+      .set("authorization", `Bearer ${token}`)
+      .send(addBody);
+
+    return res;
+  };
+
   it("should add product to cart", async () => {
     verifyToken();
     (service.addToCart as jest.Mock).mockResolvedValue(addingResponse);
 
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", `token=${token}`)
-      .send(addBody);
+    const res = await req();
 
     expect(service.addToCart).toHaveBeenCalledWith({
       userId: "user123",
@@ -143,10 +149,7 @@ describe("POST /cart/add", () => {
   it("should return an error as user is unauthorized", async () => {
     verifyTokenError();
 
-    const res = await request(app)
-      .post("/api/cart/add")
-      .set("Cookie", `token=${token}`)
-      .send(addBody);
+    const res = await req();
 
     expect(res.status).toBe(401);
     expect(res.body).toEqual(
@@ -162,7 +165,7 @@ describe("POST /cart/add", () => {
 
     const res = await request(app)
       .post("/api/cart/add")
-      .set("Cookie", `token=${token}`)
+      .set("authorization", `Bearer ${token}`)
       .send({
         productId: "prod-2",
       });
@@ -185,7 +188,7 @@ describe("POST /cart/remove/:itemId", () => {
   const req = async () => {
     return await request(app)
       .post("/api/cart/remove/prod-1")
-      .set("Cookie", `token=${token}`)
+      .set("authorization", `Bearer ${token}`)
       .send({ quantity: 1 });
   };
 
@@ -195,7 +198,7 @@ describe("POST /cart/remove/:itemId", () => {
 
     const res = await request(app)
       .post("/api/cart/remove/prod-1")
-      .set("Cookie", `token=${token}`)
+      .set("authorization", `Bearer ${token}`)
       .send({ quantity: 1 });
 
     expect(service.removeFromCart).toHaveBeenCalledWith({
@@ -267,7 +270,7 @@ describe("DELETE /cart/item/:itemId", () => {
   const req = async () => {
     return await request(app)
       .delete("/api/cart/item/prod-1")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
   };
 
   it("should delete item from cart", async () => {
@@ -341,7 +344,7 @@ describe("DELETE /cart/clear", () => {
   const req = async () => {
     return await request(app)
       .delete("/api/cart/clear")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
   };
 
   it("should return an empty cart items", async () => {
@@ -391,7 +394,7 @@ describe("DELETE /cart", () => {
   const req = async () => {
     return await request(app)
       .delete("/api/cart")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
   };
 
   it("should delete cart", async () => {

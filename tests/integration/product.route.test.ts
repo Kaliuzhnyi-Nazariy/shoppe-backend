@@ -135,7 +135,7 @@ describe("POST /products", () => {
     const res = await request(app)
       .post("/api/products")
       .send(postProduct)
-      .set("Cookie", [`token=${token}`]);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.addProducts).toHaveBeenCalledWith(postProduct);
 
@@ -164,7 +164,7 @@ describe("POST /products", () => {
     const res = await request(app)
       .post("/api/products")
       .send(wrongPostBody)
-      .set("Cookie", [`token=${token}`]);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
@@ -186,7 +186,7 @@ describe("POST /products", () => {
     const res = await request(app)
       .post("/api/products")
       .send(postProduct)
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual({ message: "Forbidden" });
@@ -235,7 +235,7 @@ describe("PUT /products/:productId", () => {
     const res = await request(app)
       .put("/api/products/123")
       .send(updProduct)
-      .set("Cookie", [`token=${token}`]);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.updateProduct).toHaveBeenCalledWith({
       productId: "123",
@@ -267,7 +267,7 @@ describe("PUT /products/:productId", () => {
     const res = await request(app)
       .put("/api/products/123")
       .send(wrongPostBody)
-      .set("Cookie", [`token=${token}`]);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
@@ -285,7 +285,7 @@ describe("PUT /products/:productId", () => {
     const res = await request(app)
       .put("/api/products/123")
       .send(updProduct)
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual({ message: "Forbidden" });
@@ -301,7 +301,7 @@ describe("PUT /products/:productId", () => {
 
     const res = await request(app)
       .put("/api/products/13")
-      .set("Cookie", `token=${token}`)
+      .set("authorization", `Bearer ${token}`)
       .send(product);
 
     expect(res.status).toBe(404);
@@ -322,7 +322,7 @@ describe("PATCH /products/archive/:productId", () => {
 
     const res = await request(app)
       .patch("/api/products/archive/132")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.archiveProduct).toHaveBeenCalledWith("132");
     expect(res.status).toBe(204);
@@ -333,7 +333,7 @@ describe("PATCH /products/archive/:productId", () => {
 
     const res = await request(app)
       .patch("/api/products/archive/123")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(401);
     expect(res.body).toEqual(
@@ -350,7 +350,7 @@ describe("PATCH /products/archive/:productId", () => {
 
     const res = await request(app)
       .patch("/api/products/archive/123")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.archiveProduct).toHaveBeenCalledWith("123");
 
@@ -367,7 +367,7 @@ describe("PATCH /products/archive/:productId", () => {
 
     const res = await request(app)
       .patch("/api/products/archive/123")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(expect.objectContaining({ message: "Forbidden" }));
@@ -387,7 +387,7 @@ describe("PATCH /products/amount/:productId", () => {
     const res = await request(app)
       .patch("/api/products/amount/123")
       .send({ amount: 5 })
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.updateProductAmount).toHaveBeenCalledWith("123", 5);
     expect(res.status).toBe(204);
@@ -399,7 +399,7 @@ describe("PATCH /products/amount/:productId", () => {
     const res = await request(app)
       .patch("/api/products/amount/123")
       .send({})
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
@@ -418,7 +418,7 @@ describe("PATCH /products/amount/:productId", () => {
     const res = await request(app)
       .patch("/api/products/amount/123")
       .send({ amount: -1 })
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual(
@@ -454,7 +454,7 @@ describe("PATCH /products/amount/:productId", () => {
     const res = await request(app)
       .patch("/api/products/amount/123")
       .send({ amount: 4 })
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.updateProductAmount).toHaveBeenCalled();
 
@@ -470,7 +470,7 @@ describe("PATCH /products/amount/:productId", () => {
     const res = await request(app)
       .patch("/api/products/amount/123")
       .send({ amount: 4 })
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(expect.objectContaining({ message: "Forbidden" }));
@@ -490,7 +490,7 @@ describe("DELETE /products/:productId", () => {
 
     const res = await request(app)
       .delete("/api/products/123")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.deleteProduct).toHaveBeenCalledWith("123");
     expect(res.status).toBe(204);
@@ -504,7 +504,7 @@ describe("DELETE /products/:productId", () => {
 
     const res = await request(app)
       .delete("/api/products/123")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(service.deleteProduct).toHaveBeenCalledWith("123");
     expect(res.status).toBe(404);
@@ -520,7 +520,7 @@ describe("DELETE /products/:productId", () => {
 
     const res = await request(app)
       .delete("/api/products/123")
-      .set("Cookie", `token=${token}`);
+      .set("authorization", `Bearer ${token}`);
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(expect.objectContaining({ message: "Forbidden" }));
