@@ -72,6 +72,10 @@ jest.mock("../../helpers", () => {
 });
 
 describe("service.getCart", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should return cart", async () => {
     (prisma.cart.upsert as jest.Mock).mockResolvedValue(cartResponse);
 
@@ -83,7 +87,19 @@ describe("service.getCart", () => {
       create: { userId: "user123" },
       include: {
         items: {
-          include: { product: true },
+          include: {
+            product: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                photos: true,
+                rate: true,
+                reviewCount: true,
+                amount: true,
+              },
+            },
+          },
           omit: { cartId: true, productId: true },
         },
       },
@@ -146,6 +162,7 @@ describe("service.addToCart", () => {
         productId: "prod-1",
         quantity: 4,
         price: 100,
+        userId: "user123",
       },
     });
 

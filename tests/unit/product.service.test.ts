@@ -31,6 +31,7 @@ describe("productService.addProduct", () => {
   const deployedProduct = {
     id: "product123",
     ...productData,
+    amount: 0,
   };
 
   beforeEach(() => {
@@ -46,6 +47,7 @@ describe("productService.addProduct", () => {
       data: {
         ...productData,
         additionalInformation: "",
+        amount: 0,
         isArchived: false,
       },
     });
