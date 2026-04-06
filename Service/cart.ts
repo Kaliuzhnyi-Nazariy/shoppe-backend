@@ -19,6 +19,7 @@ const getCart = async (userId: string) => {
               photos: true,
               rate: true,
               reviewCount: true,
+              amount: true,
             },
           },
         },
