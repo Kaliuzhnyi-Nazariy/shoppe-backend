@@ -6,9 +6,9 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = await authService.signUp(req.body);
 
-    res.cookie("token", token, cookieSettings);
+    // res.cookie("token", token, cookieSettings);
 
-    res.sendStatus(201);
+    res.status(201).json({ token });
   } catch (error) {
     next(error);
   }
@@ -19,24 +19,24 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
     const { token } = await authService.signIn(req.body);
     // const { token, role } = await authService.signIn(req.body);
 
-    res.cookie("token", token, cookieSettings);
+    // res.cookie("token", token, cookieSettings);
 
     // res.status(200).json({ role });
-    res.sendStatus(200);
+    res.status(200).json({ token });
   } catch (error) {
     next(error);
   }
 };
 
-const signOut = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    res.clearCookie("token", cookieSettings);
+// const signOut = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     res.clearCookie("token", cookieSettings);
 
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
-};
+//     res.sendStatus(204);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 const forgetPassword = async (
   req: Request,
@@ -77,4 +77,10 @@ const resetPassword = async (
   }
 };
 
-export default { signUp, signIn, signOut, forgetPassword, resetPassword };
+export default {
+  signUp,
+  signIn,
+  // signOut,
+  forgetPassword,
+  resetPassword,
+};

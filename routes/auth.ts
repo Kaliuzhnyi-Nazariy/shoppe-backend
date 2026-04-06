@@ -1,6 +1,6 @@
 import { Router } from "express";
 import authCtrl from "../controllers/auth";
-import { isAuthenticated, validateBody } from "../middlewares";
+import { validateBody } from "../middlewares";
 import {
   forgetPasswordEmailValidation,
   resetPasswordValidation,
@@ -14,7 +14,7 @@ router.post("/signup", validateBody(userSignupValidation), authCtrl.signUp);
 
 router.post("/signin", validateBody(signInValidation), authCtrl.signIn);
 
-router.post("/signout", isAuthenticated, authCtrl.signOut);
+// router.post("/signout", isAuthenticated, authCtrl.signOut);
 
 router.post(
   "/password/forget",
