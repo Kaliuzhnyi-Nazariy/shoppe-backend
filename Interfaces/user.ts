@@ -25,3 +25,8 @@ export type UpdateUser = Pick<
   IUser,
   "id" | "firstName" | "lastName" | "displayName" | "email" | "password"
 >;
+
+export type SignUpCheckout = Omit<
+  IUser,
+  "id" | "role" | "orders" | "addresses" | "cart" | "password"
+>;
