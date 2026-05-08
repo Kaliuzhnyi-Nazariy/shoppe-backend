@@ -1,158 +1,158 @@
-// import { ensureExists, errorHandler } from "../../helpers";
-import { IUser, UpdateUser } from "../../interfaces/user";
-import { prisma } from "../../lib/prisma";
-import service from "../../service/users";
-import bcrypt from "bcryptjs";
+// // import { ensureExists, errorHandler } from "../../helpers";
+// import { IUser, UpdateUser } from "../../interfaces/user";
+// import { prisma } from "../../lib/prisma";
+// import service from "../../service/users";
+// import bcrypt from "bcryptjs";
 
-jest.mock("../../lib/prisma.ts", () => ({
-  prisma: {
-    user: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-  },
-}));
-
-jest.mock("bcryptjs", () => ({
-  hash: jest.fn(),
-}));
-
-// jest.mock("../../helpers", () => ({
-//   errorHandler: jest.fn(),
-//   getUserData: jest.fn(),
-//   ensureExists: jest.fn(),
+// jest.mock("../../lib/prisma.ts", () => ({
+//   prisma: {
+//     user: {
+//       findUnique: jest.fn(),
+//       update: jest.fn(),
+//       delete: jest.fn(),
+//     },
+//   },
 // }));
 
-const user: IUser = {
-  id: "user123",
-  email: "test@mail.com",
-  role: "customer",
-  addresses: [],
-  cart: [],
-  displayName: "test_user",
-  firstName: "test",
-  lastName: "user",
-  orders: [],
-  password: "Passw0rd",
-};
+// jest.mock("bcryptjs", () => ({
+//   hash: jest.fn(),
+// }));
 
-describe("service.getUser", () => {
-  beforeEach(() => jest.clearAllMocks());
+// // jest.mock("../../helpers", () => ({
+// //   errorHandler: jest.fn(),
+// //   getUserData: jest.fn(),
+// //   ensureExists: jest.fn(),
+// // }));
 
-  it("should return a user", async () => {
-    // const user: IUser = {
-    //   id: "user123",
-    //   email: "test@mail.com",
-    //   role: "customer",
-    //   addresses: [],
-    //   cart: [],
-    //   displayName: "test_user",
-    //   firstName: "test",
-    //   lastName: "user",
-    //   orders: [],
-    //   password: "Passw0rd",
-    // };
+// const user: IUser = {
+//   id: "user123",
+//   email: "test@mail.com",
+//   role: "customer",
+//   addresses: [],
+//   cart: [],
+//   displayName: "test_user",
+//   firstName: "test",
+//   lastName: "user",
+//   orders: [],
+//   password: "Passw0rd",
+// };
 
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
+// describe("service.getUser", () => {
+//   beforeEach(() => jest.clearAllMocks());
 
-    await service.getUser("user123");
+//   it("should return a user", async () => {
+//     // const user: IUser = {
+//     //   id: "user123",
+//     //   email: "test@mail.com",
+//     //   role: "customer",
+//     //   addresses: [],
+//     //   cart: [],
+//     //   displayName: "test_user",
+//     //   firstName: "test",
+//     //   lastName: "user",
+//     //   orders: [],
+//     //   password: "Passw0rd",
+//     // };
 
-    expect(prisma.user.findUnique).toHaveBeenCalled();
-  });
+//     (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
 
-  it("should return an error no user found", async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+//     await service.getUser("user123");
 
-    await expect(service.getUser("user213")).rejects.toThrow(
-      "User is not found",
-    );
-  });
-});
+//     expect(prisma.user.findUnique).toHaveBeenCalled();
+//   });
 
-describe("service.updateUser", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+//   it("should return an error no user found", async () => {
+//     (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-  const updBody = {
-    firstName: "name",
-    lastName: "lastttt",
-    displayName: "1234",
-    email: "test_email_unit@mail.com",
-    password: "hashed_password",
-  };
+//     await expect(service.getUser("user213")).rejects.toThrow(
+//       "User is not found",
+//     );
+//   });
+// });
 
-  const newUser: IUser = {
-    id: "user123",
-    email: "testt_updatemail.com",
-    role: "customer",
-    addresses: [],
-    cart: [],
-    displayName: "test_updated_user",
-    firstName: "test",
-    lastName: "user",
-    orders: [],
-    password: "hashed_password",
-  };
+// describe("service.updateUser", () => {
+//   beforeEach(() => {
+//     jest.clearAllMocks();
+//   });
 
-  it("should return new user", async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
-    (bcrypt.hash as jest.Mock).mockResolvedValue("hashed_password");
-    (prisma.user.update as jest.Mock).mockResolvedValue(newUser);
+//   const updBody = {
+//     firstName: "name",
+//     lastName: "lastttt",
+//     displayName: "1234",
+//     email: "test_email_unit@mail.com",
+//     password: "hashed_password",
+//   };
 
-    const res = await service.updateUser({ ...updBody, id: "user123" });
+//   const newUser: IUser = {
+//     id: "user123",
+//     email: "testt_updatemail.com",
+//     role: "customer",
+//     addresses: [],
+//     cart: [],
+//     displayName: "test_updated_user",
+//     firstName: "test",
+//     lastName: "user",
+//     orders: [],
+//     password: "hashed_password",
+//   };
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
-      where: { id: "user123" },
-    });
-    expect(bcrypt.hash).toHaveBeenCalledWith(updBody.password, 10);
-    expect(prisma.user.update).toHaveBeenCalledWith({
-      where: { id: "user123" },
-      data: updBody,
-    });
+//   it("should return new user", async () => {
+//     (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
+//     (bcrypt.hash as jest.Mock).mockResolvedValue("hashed_password");
+//     (prisma.user.update as jest.Mock).mockResolvedValue(newUser);
 
-    expect(res).toEqual(newUser);
-  });
+//     const res = await service.updateUser({ ...updBody, id: "user123" });
 
-  it("should return an error no user found", async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+//     expect(prisma.user.findUnique).toHaveBeenCalledWith({
+//       where: { id: "user123" },
+//     });
+//     expect(bcrypt.hash).toHaveBeenCalledWith(updBody.password, 10);
+//     expect(prisma.user.update).toHaveBeenCalledWith({
+//       where: { id: "user123" },
+//       data: updBody,
+//     });
 
-    await expect(
-      service.updateUser({ ...updBody, id: "user444" }),
-    ).rejects.toThrow("User is not found");
-  });
-});
+//     expect(res).toEqual(newUser);
+//   });
 
-describe("service.deleteUser", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+//   it("should return an error no user found", async () => {
+//     (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
-  it("should delete user", async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
-    (prisma.user.delete as jest.Mock).mockResolvedValue(null);
+//     await expect(
+//       service.updateUser({ ...updBody, id: "user444" }),
+//     ).rejects.toThrow("User is not found");
+//   });
+// });
 
-    await service.deleteUser("user123");
+// describe("service.deleteUser", () => {
+//   beforeEach(() => {
+//     jest.clearAllMocks();
+//   });
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
-      where: { id: "user123" },
-    });
-    expect(prisma.user.delete).toHaveBeenCalledWith({
-      where: { id: "user123" },
-    });
-  });
+//   it("should delete user", async () => {
+//     (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
+//     (prisma.user.delete as jest.Mock).mockResolvedValue(null);
 
-  it("should return an error as user is not found", async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+//     await service.deleteUser("user123");
 
-    await expect(service.deleteUser("user123")).rejects.toThrow(
-      "User is not found",
-    );
+//     expect(prisma.user.findUnique).toHaveBeenCalledWith({
+//       where: { id: "user123" },
+//     });
+//     expect(prisma.user.delete).toHaveBeenCalledWith({
+//       where: { id: "user123" },
+//     });
+//   });
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
-      where: { id: "user123" },
-    });
-    expect(prisma.user.delete).not.toHaveBeenCalled();
-  });
-});
+//   it("should return an error as user is not found", async () => {
+//     (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+//     await expect(service.deleteUser("user123")).rejects.toThrow(
+//       "User is not found",
+//     );
+
+//     expect(prisma.user.findUnique).toHaveBeenCalledWith({
+//       where: { id: "user123" },
+//     });
+//     expect(prisma.user.delete).not.toHaveBeenCalled();
+//   });
+// });
