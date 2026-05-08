@@ -1,0 +1,15 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `userId` on the `OrderItem` table. All the data in the column will be lost.
+
+*/
+-- DropForeignKey
+ALTER TABLE "OrderItem" DROP CONSTRAINT "OrderItem_userId_fkey";
+
+-- AlterTable
+ALTER TABLE "Order" ADD COLUMN     "billingCompanyName" TEXT,
+ADD COLUMN     "shippingCompanyName" TEXT;
+
+-- AlterTable
+ALTER TABLE "OrderItem" DROP COLUMN "userId";

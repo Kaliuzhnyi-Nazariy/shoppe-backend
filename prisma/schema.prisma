@@ -20,14 +20,16 @@ model User {
   email    String @unique
   password String
 
-  orderItems OrderItem[]
-  cartItems  CartItem[]
+  cartItems CartItem[]
 
   addresses Address[]
   cart      Cart?
 
-  reviews Review[]
-  orders  Order[]
+  reviews             Review[]
+  orders              Order[]
+  passwordResetTokens PasswordResetTokens[]
+
+  isPasswordSet Boolean @default(false)
 }
 
 enum Role {
@@ -46,7 +48,7 @@ model Product {
   additionalInformation String?
 
   amount Int
-  photos String[]
+  photos ProductPhoto[]
 
   isArchived Boolean @default(false)
 
@@ -56,6 +58,13 @@ model Product {
   reviews    Review[]
   orderItems OrderItem[]
   cartItems  CartItem[]
+}
+
+model ProductPhoto {
+  id        String   @unique
+  link      String
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String?
 }
 
 model Review {
@@ -76,18 +85,32 @@ model Review {
 }
 
 model Order {
-  id        String   @id @default(uuid())
+  id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  buyerId String
-  buyer   User   @relation(fields: [buyerId], references: [id])
+  buyerId String?
+  buyer   User?   @relation(fields: [buyerId], references: [id])
 
-  billingAddressId String
-  billingAddress   Address @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingFirstName   String
+  billingLastName    String
+  billingCompanyName String?
+  billingStreet      String
+  billingCity        String
+  billingPostcode    String
+  billingCountry     String
+  billingPhone       String
+  billingEmail       String
 
-  shippingAddressId String
-  shippingAddress   Address @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingFirstName   String
+  shippingLastName    String
+  shippingCompanyName String?
+  shippingStreet      String
+  shippingCity        String
+  shippingPostcode    String
+  shippingCountry     String
+  shippingPhone       String
+  shippingEmail       String
 
   buyerEmail    String
   contactNumber String
@@ -95,10 +118,20 @@ model Order {
   deliveryOption ShippingOptions @default(free)
   status         OrderStatus     @default(pending)
 
+  paymentMethod PaymentMethods
+  payment       Payment?
+
   totalPrice Float
   notes      String?
 
-  items OrderItem[]
+  items     OrderItem[]
+  downloads Downloads[]
+}
+
+enum PaymentMethods {
+  cashOnDelivery
+  stripe
+  checkPayment
 }
 
 enum ShippingOptions {
@@ -121,13 +154,35 @@ model OrderItem {
   order   Order  @relation(fields: [orderId], references: [id])
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   productTitle String
   quantity     Int
   price        Float
-  user         User?   @relation(fields: [userId], references: [id])
-  userId       String?
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  method PaymentMethods
+
+  status PaymentStatus
+
+  amount Float
+
+  providerId String?
+
+  createdAt DateTime @default(now())
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
 }
 
 model Address {
@@ -148,9 +203,6 @@ model Address {
 
   phone String
   email String
-
-  billingOrders  Order[] @relation("BillingAddress")
-  shippingOrders Order[] @relation("ShippingAddress")
 }
 
 model Cart {
@@ -171,13 +223,35 @@ model CartItem {
   cart   Cart   @relation(fields: [cartId], references: [id])
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   quantity Int
   user     User?   @relation(fields: [userId], references: [id])
   userId   String?
 
-  price Flot
+  price Float
 
   @@unique([cartId, productId])
+}
+
+model PasswordResetTokens {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  token     String?
+  expiresAt DateTime
+}
+
+model Downloads {
+  id String @id @default(uuid())
+
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  userId String?
+  totalPrice String?
+
+  createdAt DateTime @default(now())
 }
