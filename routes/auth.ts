@@ -57,9 +57,4 @@ router.post(
   authCtrl.setPassword,
 );
 
-// dev
-
-router.get("/all/requests", authCtrl.allChangePasswordRequests);
-router.get("/all/users", authCtrl.allUsers);
-
 export default router;

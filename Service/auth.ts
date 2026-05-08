@@ -1,12 +1,10 @@
-import { ensureExists, errorHandler } from "../helpers";
-import { SignIn, SignUp, SignUpCheckout } from "../interfaces/user";
+import { errorHandler } from "../helpers";
+import { SignIn, SignUp } from "../interfaces/user";
 import { sendEmail } from "../utils";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
 import { jwtVerify } from "jose";
-import { verifyTokenHelper } from "../helpers/verifyToken";
 
 const { JWT_SECRET, JWT_SECRET_FOR_RESET_PASSWORD } = process.env;
 const secret_for_change_password = new TextEncoder().encode(
@@ -234,8 +232,6 @@ const createCheckoutUser = async ({
       throw errorHandler(500, "sth went wrong");
     }
   } catch (error) {
-    console.log(error);
-
     if (isTokenExist) {
       await prisma.passwordResetTokens.create({
         data: isTokenExist,
@@ -302,7 +298,6 @@ const setPassword = async ({
           }),
       );
   } catch (error) {
-    console.error(error);
     throw errorHandler(500, "Sth went wrong");
   }
 
@@ -336,36 +331,11 @@ const askResetPassword = async (userId: string) => {
       name: user.firstName + " " + user.lastName,
       token: id,
     });
-
-    console.log("after send: ", {
-      email: user.email,
-      name: user.firstName + " " + user.lastName,
-      token: id,
-    });
   } catch (error) {
-    console.error(error);
     throw errorHandler(500, "Email is not sent, because of internal error");
   }
 
   return;
-};
-
-// dev
-
-const getAllRequestsToChangePassword = async () => {
-  return await prisma.passwordResetTokens.findMany();
-};
-
-const allUsers = async () => {
-  // await prisma.payment.deleteMany();
-  // await prisma.orderItem.deleteMany();
-  // await prisma.order.deleteMany();
-  // await prisma.address.deleteMany();
-  // await prisma.passwordResetTokens.deleteMany();
-  // await prisma.cartItem.deleteMany();
-  // await prisma.cart.deleteMany();
-  // await prisma.user.deleteMany();
-  return await prisma.user.findMany();
 };
 
 export default {
@@ -377,6 +347,4 @@ export default {
   createCheckoutUser,
   setPassword,
   askResetPassword,
-  getAllRequestsToChangePassword,
-  allUsers,
 };
