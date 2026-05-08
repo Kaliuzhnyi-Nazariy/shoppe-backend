@@ -162,7 +162,7 @@ const updateProduct = async ({
     (p: { link: string }) => !(photos ?? []).includes(p.link),
   );
 
-  const idsToDelete = removedPhotos.map((p) => p.id);
+  const idsToDelete = removedPhotos.map((p: { id: string }) => p.id);
 
   await cloudinaryDelete(idsToDelete);
 
