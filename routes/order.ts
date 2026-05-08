@@ -1,6 +1,40 @@
 import { Router } from "express";
-import { isAuthenticated } from "../middlewares";
+import { authorize, isAuthenticated, validateBody } from "../middlewares";
+import ctrl from "../controllers/orders";
+import { orderValidation } from "../validation/order.validation";
 
 const router = Router();
+
+router.get("/my", isAuthenticated, ctrl.getMyOrders);
+
+router.get(
+  "/",
+  isAuthenticated,
+  authorize(["admin", "customer"]),
+  ctrl.getOrders,
+);
+// router.get("/all", isAuthenticated, authorize(["admin"]), ctrl.getOrders);
+
+router.get("/:orderId", ctrl.getOrderById);
+
+router.post(
+  "/place",
+  // isAuthenticated,
+  validateBody(orderValidation),
+  ctrl.placeOrder,
+);
+
+router.patch("/cancel/:orderId", isAuthenticated, ctrl.cancelOrder);
+
+router.patch(
+  "/status/:orderId",
+  isAuthenticated,
+  authorize(["admin"]),
+  ctrl.updateOrderStatus,
+);
+
+router.delete("/", ctrl.deleteAllOrders);
+
+router.get("/download/:orderId", isAuthenticated, ctrl.downloadOrder);
 
 export default router;
