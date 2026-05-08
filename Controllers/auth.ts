@@ -99,22 +99,6 @@ const resetPasswordRequest = async (
   res.sendStatus(200);
 };
 
-const allChangePasswordRequests = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const data = await authService.getAllRequestsToChangePassword();
-
-  res.status(200).json(data);
-};
-
-const allUsers = async (req: Request, res: Response, next: NextFunction) => {
-  const data = await authService.allUsers();
-
-  res.status(200).json(data);
-};
-
 export default {
   signUp: controllerWrapper(signUp),
   signIn: controllerWrapper(signIn),
@@ -123,7 +107,5 @@ export default {
   resetPassword: controllerWrapper(resetPassword),
   createUserCheckout: controllerWrapper(createUserCheckout),
   setPassword: controllerWrapper(setPassword),
-  allChangePasswordRequests: controllerWrapper(allChangePasswordRequests),
-  allUsers: controllerWrapper(allUsers),
   resetPasswordRequest: controllerWrapper(resetPasswordRequest),
 };
