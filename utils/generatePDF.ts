@@ -1,6 +1,6 @@
 import PDFDocument from "pdfkit";
 import { Response } from "express";
-import { IOrder } from "../interfaces/order";
+import { IOrder, OrderPlaceProductsItem } from "../interfaces/order";
 import path from "path";
 
 export const generatePDF = (res: Response, order: IOrder) => {
@@ -36,7 +36,7 @@ export const generatePDF = (res: Response, order: IOrder) => {
 
   doc.text("ITEMS:", { underline: true });
   doc.moveDown(0.5);
-  order.items.forEach((item) => {
+  order.items.forEach((item: OrderPlaceProductsItem) => {
     doc.text(`${item.productTitle} - ${item.quantity} x $${item.price}`);
   });
   doc.moveDown();

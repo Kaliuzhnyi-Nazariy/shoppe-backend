@@ -4,6 +4,13 @@ export interface OrderProductsItem {
   price: number;
 }
 
+export interface OrderPlaceProductsItem {
+  productId: string;
+  productTitle: string;
+  quantity: number;
+  price: number;
+}
+
 // export interface IOrder {
 //   firstName: string;
 //   companyName?: string;
