@@ -1,38 +1,47 @@
 import { Router } from "express";
 import { authorize, isAuthenticated, validateBody } from "../middlewares";
-import productsService from "../controllers/products";
+import productsCtrl from "../controllers/products";
 import {
   addAndUpdateProductValidation,
   updateAmpuntOfProduct,
+  UpdateProductValidation,
 } from "../validation/product.validation";
+import multer from "multer";
 
 const router = Router();
 
-router.get("/", productsService.getProducts);
+// const upload = multer();
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.get("/:productId", productsService.getProductById);
+router.get("/", productsCtrl.getProducts);
+
+router.get("/stats", productsCtrl.getProductStats);
+
+router.get("/:productId", productsCtrl.getProductById);
 
 router.post(
   "/",
   isAuthenticated,
   authorize(["admin"]),
+  upload.array("product_photo", 10),
   validateBody(addAndUpdateProductValidation),
-  productsService.addProduct,
+  productsCtrl.addProduct,
 );
 
 router.put(
   "/:productId",
   isAuthenticated,
   authorize(["admin"]),
-  validateBody(addAndUpdateProductValidation),
-  productsService.updateProduct,
+  upload.array("product_photo", 10),
+  validateBody(UpdateProductValidation),
+  productsCtrl.updateProduct,
 );
 
 router.patch(
   "/archive/:productId",
   isAuthenticated,
   authorize(["admin"]),
-  productsService.archiveProduct,
+  productsCtrl.archiveProduct,
 );
 
 router.patch(
@@ -40,14 +49,14 @@ router.patch(
   isAuthenticated,
   authorize(["admin"]),
   validateBody(updateAmpuntOfProduct),
-  productsService.updateProductAmount,
+  productsCtrl.updateProductAmount,
 );
 
 router.delete(
   "/:productId",
   isAuthenticated,
   authorize(["admin"]),
-  productsService.deleteProduct,
+  productsCtrl.deleteProduct,
 );
 
 export default router;

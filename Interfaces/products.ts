@@ -17,6 +17,19 @@
 // };
 
 export interface IProduct {
+  photos: { link: string; id: string }[];
+  // photos: string[];
+  title: string;
+  description: string;
+  additionalInformation: string;
+  price: number;
+  amount: number;
+  isArchived: boolean;
+  rate: number;
+}
+
+export interface IUpdateProduct {
+  // photos: { url: string; id: string }[];
   photos: string[];
   title: string;
   description: string;
@@ -25,6 +38,7 @@ export interface IProduct {
   amount: number;
   isArchived: boolean;
   rate: number;
+  newPhotos: string[];
 }
 
 export type IAddProduct = Omit<

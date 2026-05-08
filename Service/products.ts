@@ -1,14 +1,83 @@
-import { ensureProductExists, errorHandler } from "../helpers";
-import { IAddProduct, IProduct } from "../interfaces/products";
+import {
+  cloudinaryDelete,
+  ensureProductExists,
+  errorHandler,
+  getProductWithPhotos,
+} from "../helpers";
+import { IAddProduct, IProduct, IUpdateProduct } from "../interfaces/products";
 import { prisma } from "../lib/prisma";
 
-const getProducts = async () => {
+// const getProducts = async () => {
+//   // return prisma.product.findMany({ where: { title: "" }  });
+//   return await prisma.product.findMany({ include: { photos: true } });
+// };
+
+// const getProducts = async (
+//   serach: string,
+//   data: { id: string | null; role: "admin" | "customer" | null },
+// ) => {
+//   // return prisma.product.findMany({ where: { title: "" }  });
+//   return await prisma.product.findMany({
+//     include: { photos: true },
+//     where: {
+//       ...(serach
+//         ? {
+//             OR: [
+//               { title: { contains: serach, mode: "insensitive" } },
+//               { description: { contains: serach, mode: "insensitive" } },
+//             ],
+//           }
+//         : {}),
+//       ...(data && data.role !== "admin" && { isArchived: false }),
+//     },
+//   });
+// };
+
+const getProducts = async (
+  serach: string,
+  lte: string,
+  gte: string,
+  stock: string,
+  sort: string,
+  data: { id: string | null; role: "admin" | "customer" | null },
+) => {
+  const numberLte = Number(lte);
+  const numberGte = Number(gte);
+  const stockBoolean = stock === "true";
+
+  // console.log({ serach, numberGte, numberLte, stockBoolean, sort });
+
+  const orderBy = sort
+    ? { [sort == "price" ? sort : "createdAt"]: "desc" }
+    : {};
   // return prisma.product.findMany({ where: { title: "" }  });
-  return await prisma.product.findMany();
+  return await prisma.product.findMany({
+    include: { photos: true },
+    where: {
+      ...(serach
+        ? {
+            OR: [
+              { title: { contains: serach, mode: "insensitive" } },
+              { description: { contains: serach, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(data && data.role !== "admin" && { isArchived: false }),
+      price: {
+        ...(numberLte ? { lte: numberLte } : {}),
+        ...(numberGte ? { gte: numberGte } : {}),
+      },
+      amount: { ...(stockBoolean ? { gt: 0 } : {}) },
+    },
+    orderBy: orderBy,
+  });
 };
 
 const getProductById = async (productId: string) => {
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: { photos: true },
+  });
 
   if (product) {
     return product;
@@ -25,21 +94,30 @@ const addProducts = async (data: IAddProduct) => {
     price,
     additionalInformation = "",
     photos = [],
+    amount = 0,
   } = data;
 
   const res = await prisma.product.create({
     data: {
       title,
-      amount: 0,
       description,
       isArchived,
       price,
       additionalInformation,
-      photos,
+      photos: {
+        create: photos.map((photo) => ({
+          id: photo.id,
+          link: photo.link,
+        })),
+      },
+      amount,
     },
   });
 
   return res;
+
+  // console.log({ data });
+  // return;
 };
 
 const updateProduct = async ({
@@ -47,14 +125,65 @@ const updateProduct = async ({
   data,
 }: {
   productId: string;
-  data: IProduct;
+  data: IUpdateProduct;
 }) => {
-  const product = await ensureProductExists(productId);
+  const product = await getProductWithPhotos(productId);
+
+  const {
+    photos,
+    additionalInformation,
+    amount,
+    description,
+    isArchived,
+    price,
+    title,
+    newPhotos,
+  } = data;
+
+  let photosForUpd: Photo[];
+
+  const productPhotos = product.photos;
+
+  if (Array.isArray(photos)) {
+    const isInDb = photos.map(
+      (p) => productPhotos.filter((pp) => pp.link == p)[0],
+    );
+    photosForUpd = isInDb;
+  } else {
+    photosForUpd = productPhotos.filter((pp) => pp.link === photos);
+  }
+
+  const removedPhotos = product.photos.filter(
+    (p) => !(photos ?? []).includes(p.link),
+  );
+
+  const idsToDelete = removedPhotos.map((p) => p.id);
+
+  await cloudinaryDelete(idsToDelete);
+
+  type Photo = { id: string; link: string };
+
+  const listOfPhotos: Photo[] = [
+    ...(photosForUpd ?? []),
+    ...(newPhotos ?? []),
+  ] as unknown as Photo[];
 
   const updatedProduct = await prisma.product.update({
     where: { id: productId },
     data: {
-      ...data,
+      amount,
+      description,
+      isArchived,
+      price,
+      title,
+      additionalInformation,
+      photos: {
+        deleteMany: {},
+        create: listOfPhotos.map((photo) => ({
+          id: photo.id,
+          link: photo.link,
+        })),
+      },
       rate: product.rate,
     },
   });
@@ -66,11 +195,11 @@ const updateProductAmount = async (
   productId: string,
   productNumber: number,
 ) => {
-  const product = await ensureProductExists(productId);
+  await ensureProductExists(productId);
 
   await prisma.product.update({
     where: { id: productId },
-    data: { ...product, amount: productNumber },
+    data: { amount: productNumber },
   });
 };
 
@@ -79,7 +208,7 @@ const archiveProduct = async (productId: string) => {
 
   await prisma.product.update({
     where: { id: productId },
-    data: { ...product, isArchived: true },
+    data: { ...product, isArchived: !product.isArchived },
   });
 };
 
@@ -91,6 +220,13 @@ const deleteProduct = async (productId: string) => {
   });
 };
 
+const getMinMaxPrice = async () => {
+  return await prisma.product.aggregate({
+    _min: { price: true },
+    _max: { price: true },
+  });
+};
+
 export default {
   getProducts,
   getProductById,
@@ -99,4 +235,5 @@ export default {
   updateProductAmount,
   archiveProduct,
   deleteProduct,
+  getMinMaxPrice,
 };
