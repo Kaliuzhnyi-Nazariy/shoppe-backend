@@ -1,6 +1,5 @@
 import { ensureExists, errorHandler } from "../helpers";
-import { AddCartItem } from "../interfaces/cart";
-import { IAddProduct } from "../interfaces/products";
+import { AddCartItem, ICartItem } from "../interfaces/cart";
 import { prisma } from "../lib/prisma";
 
 const getCart = async (userId: string) => {
@@ -20,6 +19,7 @@ const getCart = async (userId: string) => {
               rate: true,
               reviewCount: true,
               amount: true,
+              isArchived: true,
             },
           },
         },
@@ -280,14 +280,44 @@ const deleteCart = async (userId: string) => {
 //   return res;
 // };
 
-const addMany = async (userId: string, products: AddCartItem[]) => {
+// const addMany = async (userId: string, products: AddCartItem[]) => {
+const addMany = async (userId: string, products: ICartItem[]) => {
   const cart = await ensureExists({
     model: prisma.cart,
     where: { userId },
     entityName: "Cart",
   });
 
-  const productIds = products.map((p) => p.productId);
+  // console.log({ products });
+  // // console.log(products.map)
+  // const productIds = products.map((ci) => {
+  //   return ci.product.id;
+  // });
+
+  // console.log({ productIds });
+
+  // return;
+
+  // const productIds = products.map((p) => p.productId);
+
+  const productIds = products.map((ci) => {
+    return ci.product.id;
+  });
+
+  // const productsMap = new Map(
+  //   products.map((ci) => [
+  //     ci.id,
+  //     { productId: ci.product.id, quantity: ci.quantity },
+  //   ]),
+  // );
+
+  const productsMap = products.map((ci) => {
+    return {
+      id: ci.id,
+      productId: ci.product.id,
+      quantity: ci.quantity,
+    };
+  });
 
   const dbProducts = await prisma.product.findMany({
     where: { id: { in: productIds } },
@@ -304,7 +334,8 @@ const addMany = async (userId: string, products: AddCartItem[]) => {
   const productMap = new Map(dbProducts.map((p) => [p.id, p]));
   const existingMap = new Map(existingItems.map((i) => [i.productId, i]));
 
-  const operations = products.map((p) => {
+  const operations = productsMap.map((p) => {
+    // const operations = products.map((p) => {
     const dbProduct = productMap.get(p.productId);
 
     if (!dbProduct) throw errorHandler(404, "Product is not found");

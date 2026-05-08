@@ -18,13 +18,9 @@ const getItemParam = (
 const getCart = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
 
-  try {
-    const response = await service.getCart(id);
+  const response = await service.getCart(id);
 
-    res.status(200).json(response);
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json(response);
 };
 
 const addToCart = async (req: Request, res: Response, next: NextFunction) => {
@@ -99,6 +95,8 @@ const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
 
 const addMany = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
+
+  // console.log(req.body);
 
   const result = await service.addMany(id, req.body);
   res.status(201).json(result);
