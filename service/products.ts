@@ -146,15 +146,20 @@ const updateProduct = async ({
 
   if (Array.isArray(photos)) {
     const isInDb = photos.map(
-      (p) => productPhotos.filter((pp) => pp.link == p)[0],
+      (p) =>
+        productPhotos.filter(
+          (pp: { link: string; id: string }) => pp.link == p,
+        )[0],
     );
     photosForUpd = isInDb;
   } else {
-    photosForUpd = productPhotos.filter((pp) => pp.link === photos);
+    photosForUpd = productPhotos.filter(
+      (pp: { link: string; id: string }) => pp.link === photos,
+    );
   }
 
   const removedPhotos = product.photos.filter(
-    (p) => !(photos ?? []).includes(p.link),
+    (p: { link: string }) => !(photos ?? []).includes(p.link),
   );
 
   const idsToDelete = removedPhotos.map((p) => p.id);

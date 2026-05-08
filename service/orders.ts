@@ -165,15 +165,23 @@ const cancelOrder = async (orderId: string) => {
     if (!orderData) throw errorHandler(404, "order is not found");
 
     await Promise.all(
-      orderData.items.map((item) =>
-        tx.product.update({
-          where: { id: item.productId },
-          data: {
-            amount: {
-              increment: item.quantity,
+      orderData.items.map(
+        (item: {
+          id: string;
+          orderId: string;
+          productId: string;
+          productTitle: string;
+          quantity: number;
+          price: number;
+        }) =>
+          tx.product.update({
+            where: { id: item.productId },
+            data: {
+              amount: {
+                increment: item.quantity,
+              },
             },
-          },
-        }),
+          }),
       ),
     );
 

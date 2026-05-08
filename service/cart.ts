@@ -331,8 +331,24 @@ const addMany = async (userId: string, products: ICartItem[]) => {
     },
   });
 
-  const productMap = new Map(dbProducts.map((p) => [p.id, p]));
-  const existingMap = new Map(existingItems.map((i) => [i.productId, i]));
+  const productMap = new Map(
+    dbProducts.map((p: { id: string; price: number; amount: number }) => [
+      p.id,
+      p,
+    ]),
+  );
+  const existingMap = new Map(
+    existingItems.map(
+      (i: {
+        id: string;
+        price: number;
+        cartId: string;
+        productId: string;
+        quantity: number;
+        userId: string | null;
+      }) => [i.productId, i],
+    ),
+  );
 
   const operations = productsMap.map((p) => {
     // const operations = products.map((p) => {
