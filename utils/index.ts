@@ -1,3 +1,4 @@
 import sendEmail from "./sendEmail";
+import { generatePDF } from "./generatePDF";
 
-export { sendEmail };
+export { sendEmail, generatePDF };

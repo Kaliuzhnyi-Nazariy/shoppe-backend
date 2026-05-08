@@ -12,12 +12,16 @@ const mailjet = Mailjet.apiConnect(API_KEY_MAIL!, SECRET_KEY_MAIL!);
 const sendEmail = async ({
   email,
   name,
-}: //   tokenId,
-{
+  token,
+}: {
   email: string;
   name: string;
-  //   tokenId: string
+  token?: string;
 }) => {
+  const link = token ? `set/password?token=${token}` : `set/password`;
+
+  const subject = token ? "Set password" : "Reset password";
+
   await mailjet.post("send", { version: "v3.1" }).request({
     Messages: [
       {
@@ -31,10 +35,10 @@ const sendEmail = async ({
             Name: name,
           },
         ],
-        Subject: "My first Mailjet Email!",
+        Subject: subject,
         TextPart: "Greetings from Mailjet!",
-        HTMLPart:
-          '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+        HTMLPart: `<h1>Hello, ${name}</h1><p>click <a href="http://localhost:5173/${link}" 
+        target="_blank"</a> to set password</p>`,
       },
     ],
   });
