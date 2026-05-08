@@ -1,31 +1,29 @@
 import { Request, Response, NextFunction } from "express";
 import authService from "../service/auth";
-import { cookieSettings, errorHandler } from "../helpers";
+import {
+  controllerWrapper,
+  cookieSettings,
+  errorHandler,
+  getParam,
+  getUserData,
+} from "../helpers";
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { token } = await authService.signUp(req.body);
+  const { token } = await authService.signUp(req.body);
 
-    // res.cookie("token", token, cookieSettings);
+  // res.cookie("token", token, cookieSettings);
 
-    res.status(201).json({ token });
-  } catch (error) {
-    next(error);
-  }
+  res.status(201).json({ token });
 };
 
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { token } = await authService.signIn(req.body);
-    // const { token, role } = await authService.signIn(req.body);
+  const { token } = await authService.signIn(req.body);
+  // const { token, role } = await authService.signIn(req.body);
 
-    // res.cookie("token", token, cookieSettings);
+  // res.cookie("token", token, cookieSettings);
 
-    // res.status(200).json({ role });
-    res.status(200).json({ token });
-  } catch (error) {
-    next(error);
-  }
+  // res.status(200).json({ role });
+  res.status(200).json({ token });
 };
 
 // const signOut = async (req: Request, res: Response, next: NextFunction) => {
@@ -43,15 +41,11 @@ const forgetPassword = async (
   res: Response,
   next: NextFunction,
 ) => {
-  try {
-    const data = await authService.forgetPassword(req.body.email);
+  const data = await authService.forgetPassword(req.body.email);
 
-    if (!data || !data.token) return next(errorHandler(500, "Sth went wrong"));
+  if (!data || !data.token) return next(errorHandler(500, "Sth went wrong"));
 
-    res.status(200).json({ token: data.token });
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json({ token: data.token });
 };
 
 const resetPassword = async (
@@ -59,28 +53,77 @@ const resetPassword = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const { tokenId } = req.params;
+  const { token, password, confirmPassword } = req.body;
 
-  if (!tokenId)
-    return res.status(400).json({ message: "token id is required" });
+  if (!token) return res.status(400).json({ message: "token is required" });
 
-  try {
-    await authService.resetPassword(
-      tokenId as string,
-      req.body.password,
-      req.body.confirmPassword,
-    );
+  await authService.resetPassword(token, password, confirmPassword);
 
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
+  res.sendStatus(204);
+};
+
+const createUserCheckout = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { token, idToResetPassword } = await authService.createCheckoutUser(
+    req.body,
+  );
+
+  if (!token) errorHandler(404, "Request is not found");
+
+  res.status(201).json({ token, idToResetPassword });
+};
+
+const setPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const tokenId = getParam(req, "tokenId", "Token id");
+
+  await authService.setPassword({
+    tokenId,
+    password: req.body.password,
+  });
+
+  res.sendStatus(200);
+};
+
+const resetPasswordRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { id } = getUserData(req);
+
+  await authService.askResetPassword(id);
+
+  res.sendStatus(200);
+};
+
+const allChangePasswordRequests = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const data = await authService.getAllRequestsToChangePassword();
+
+  res.status(200).json(data);
+};
+
+const allUsers = async (req: Request, res: Response, next: NextFunction) => {
+  const data = await authService.allUsers();
+
+  res.status(200).json(data);
 };
 
 export default {
-  signUp,
-  signIn,
+  signUp: controllerWrapper(signUp),
+  signIn: controllerWrapper(signIn),
   // signOut,
-  forgetPassword,
-  resetPassword,
+  forgetPassword: controllerWrapper(forgetPassword),
+  resetPassword: controllerWrapper(resetPassword),
+  createUserCheckout: controllerWrapper(createUserCheckout),
+  setPassword: controllerWrapper(setPassword),
+  allChangePasswordRequests: controllerWrapper(allChangePasswordRequests),
+  allUsers: controllerWrapper(allUsers),
+  resetPasswordRequest: controllerWrapper(resetPasswordRequest),
 };

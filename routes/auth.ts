@@ -1,10 +1,16 @@
 import { Router } from "express";
 import authCtrl from "../controllers/auth";
-import { validateBody } from "../middlewares";
+import {
+  isAuthenticated,
+  isPasswordSetMiddleware,
+  validateBody,
+} from "../middlewares";
 import {
   forgetPasswordEmailValidation,
   resetPasswordValidation,
+  setPasswordValidation,
   signInValidation,
+  userSignupCheckoutValidation,
   userSignupValidation,
 } from "../validation/auth.validation";
 
@@ -12,7 +18,12 @@ const router = Router();
 
 router.post("/signup", validateBody(userSignupValidation), authCtrl.signUp);
 
-router.post("/signin", validateBody(signInValidation), authCtrl.signIn);
+router.post(
+  "/signin",
+  validateBody(signInValidation),
+  isPasswordSetMiddleware,
+  authCtrl.signIn,
+);
 
 // router.post("/signout", isAuthenticated, authCtrl.signOut);
 
@@ -23,9 +34,32 @@ router.post(
 );
 
 router.patch(
-  "/password/reset/:tokenId",
+  "/password/reset",
   validateBody(resetPasswordValidation),
   authCtrl.resetPassword,
 );
+
+router.post(
+  "/signup/checkout",
+  validateBody(userSignupCheckoutValidation),
+  authCtrl.createUserCheckout,
+);
+
+router.post(
+  "/password/reset/request",
+  isAuthenticated,
+  authCtrl.resetPasswordRequest,
+);
+
+router.post(
+  "/set/password/:tokenId",
+  validateBody(setPasswordValidation),
+  authCtrl.setPassword,
+);
+
+// dev
+
+router.get("/all/requests", authCtrl.allChangePasswordRequests);
+router.get("/all/users", authCtrl.allUsers);
 
 export default router;
