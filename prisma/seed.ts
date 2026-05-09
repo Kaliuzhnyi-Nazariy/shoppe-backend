@@ -89,6 +89,7 @@ const seedUsers = async () => {
       lastName: "User",
       password: hashedPassword,
       role: "admin",
+      isPasswordSet: true,
     },
   });
 
@@ -103,7 +104,7 @@ const seedUsers = async () => {
       firstName: "Regular",
       lastName: "User",
       password: hashedPassword,
-      role: "customer",
+      isPasswordSet: true,
     },
   });
 
