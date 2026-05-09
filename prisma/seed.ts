@@ -32,6 +32,46 @@ const PRODUCTS = [
       },
     ],
   },
+  {
+    title: "Apple Studio Display",
+    description:
+      "27-inch 5K Retina display with outstanding color accuracy and premium aluminum design.",
+    price: 1599.99,
+    additionalInformation:
+      "Includes built-in camera, studio-quality microphones, and six-speaker sound system.",
+    amount: 6,
+    isArchived: false,
+    photos: [
+      {
+        id: "studio-display-1",
+        link: "https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc",
+      },
+      {
+        id: "studio-display-2",
+        link: "https://images.unsplash.com/photo-1496171367470-9ed9a91ea931",
+      },
+      {
+        id: "studio-display-3",
+        link: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+      },
+    ],
+  },
+  {
+    title: "SteelSeries Arctis Nova Pro",
+    description:
+      "Premium wireless gaming headset with active noise cancellation and immersive spatial audio.",
+    price: 329.99,
+    additionalInformation:
+      "Dual-battery hot swap system with multi-platform support.",
+    amount: 0,
+    isArchived: false,
+    photos: [
+      {
+        id: "arctis-nova-pro-1",
+        link: "https://images.unsplash.com/photo-1546435770-a3e426bf472b",
+      },
+    ],
+  },
 ];
 
 const seedUsers = async () => {
