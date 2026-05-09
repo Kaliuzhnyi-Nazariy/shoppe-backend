@@ -2,7 +2,7 @@ import { UpdateUser } from "../interfaces/user";
 import { prisma } from "../lib/prisma";
 import { ensureExists, errorHandler } from "../helpers";
 import bcrypt from "bcryptjs";
-import { Prisma } from "../generated/prisma";
+// import { Prisma } from "../generated/prisma";
 
 const getUser = async (userId: string) => {
   const res = await prisma.user.findUnique({
@@ -53,10 +53,7 @@ const updateUser = async ({
 
     return newUser;
   } catch (error: any) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    if (error.code === "P2002") {
       throw errorHandler(409, "Email already in use");
     }
 
