@@ -7,7 +7,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://shoppe-8f1f.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://shoppe-8f1f.vercel.app",
+      "https://shoppe-iota.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
