@@ -29,7 +29,6 @@ const getCart = async (userId: string) => {
   });
 
   return { id: cart.id, items: cart.items };
-  //   return prisma.cart.findUnique({ where: { userId } });
 };
 
 const addToCart = async ({

@@ -4,34 +4,8 @@ import {
   errorHandler,
   getProductWithPhotos,
 } from "../helpers";
-import { IAddProduct, IProduct, IUpdateProduct } from "../interfaces/products";
+import { IAddProduct, IUpdateProduct } from "../interfaces/products";
 import { prisma } from "../lib/prisma";
-
-// const getProducts = async () => {
-//   // return prisma.product.findMany({ where: { title: "" }  });
-//   return await prisma.product.findMany({ include: { photos: true } });
-// };
-
-// const getProducts = async (
-//   serach: string,
-//   data: { id: string | null; role: "admin" | "customer" | null },
-// ) => {
-//   // return prisma.product.findMany({ where: { title: "" }  });
-//   return await prisma.product.findMany({
-//     include: { photos: true },
-//     where: {
-//       ...(serach
-//         ? {
-//             OR: [
-//               { title: { contains: serach, mode: "insensitive" } },
-//               { description: { contains: serach, mode: "insensitive" } },
-//             ],
-//           }
-//         : {}),
-//       ...(data && data.role !== "admin" && { isArchived: false }),
-//     },
-//   });
-// };
 
 const getProducts = async (
   serach: string,
@@ -45,12 +19,9 @@ const getProducts = async (
   const numberGte = Number(gte);
   const stockBoolean = stock === "true";
 
-  // console.log({ serach, numberGte, numberLte, stockBoolean, sort });
-
   const orderBy = sort
     ? { [sort == "price" ? sort : "createdAt"]: "desc" }
     : {};
-  // return prisma.product.findMany({ where: { title: "" }  });
   return await prisma.product.findMany({
     include: { photos: true },
     where: {
@@ -115,9 +86,6 @@ const addProducts = async (data: IAddProduct) => {
   });
 
   return res;
-
-  // console.log({ data });
-  // return;
 };
 
 const updateProduct = async ({

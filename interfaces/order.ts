@@ -11,38 +11,6 @@ export interface OrderPlaceProductsItem {
   price: number;
 }
 
-// export interface IOrder {
-//   firstName: string;
-//   companyName?: string;
-//   country: string;
-//   streetAddress: string;
-//   postcode: string;
-//   city: string;
-//   phone: string;
-//   email: string;
-//   notes: string;
-//   products: OrderProductsItem[];
-// }
-
-// enum ShippingOptions {
-//   free,
-//   paid,
-// }
-
-// enum OrderStatus {
-//   pending,
-//   paid,
-//   shipping,
-//   delivered,
-//   canceled,
-// }
-
-// enum PaymentMethods {
-//   cashOnDelivery,
-//   stripe,
-//   checkPayment,
-// }
-
 type ShippingOptions = "free" | "paid";
 
 export type OrderStatus =
@@ -93,8 +61,6 @@ export interface PlaceOrder {
     quantity: number;
     price: number;
   }[];
-
-  // items OrderItem[]
 }
 
 export interface PlaceOrderBody {
@@ -140,8 +106,6 @@ export interface PlaceOrderBody {
     quantity: number;
     price: number;
   }[];
-
-  // items OrderItem[]
 }
 export interface IOrder extends PlaceOrder {
   id: string;

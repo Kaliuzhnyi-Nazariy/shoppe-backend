@@ -19,29 +19,11 @@ const getMyOrders = async (userId: string) => {
   return data;
 };
 
-// const getOrderById = async (orderdId: string, userId: string | null) => {
-//   const order = await prisma.order.findUnique({
-//     where: { id: orderdId },
-//     // where: { id: orderdId, ...(userId ? { buyerId: userId } : {}) },
-//     include: {
-//       items: true,
-//       payment: true,
-//     },
-//   });
-
-//   return order;
-// };
-
 const getOrderById = async (
   orderdId: string,
   data: { id: string | null; role: string | null },
 ) => {
   const order = await prisma.order.findUnique({
-    // where: { id: orderdId },
-    // where: {
-    //   id: orderdId,
-    //   ...(data.role === "customer" && data.id ? { buyerId: data.id } : {}),
-    // },
     where: {
       id: orderdId,
       ...(data.role === "customer" && data.id
@@ -67,30 +49,6 @@ const placeOrder = async ({
   orderData: PlaceOrderBody;
 }) => {
   const order = prisma.$transaction(async (tx) => {
-    // for (const item of orderData.items) {
-    //   const product = await tx.product.findUnique({
-    //     where: { id: item.productId },
-    //   });
-
-    //   if (!product || product.amount < item.quantity) {
-    //     throw errorHandler(400, "Not enough stock for product");
-    //   }
-    // }
-
-    // for (const item of orderData.items) {
-    //   await tx.product.update({
-    //     where: {
-    //       id: item.productId,
-    //       amount: { gte: item.quantity },
-    //     },
-    //     data: {
-    //       amount: {
-    //         decrement: item.quantity,
-    //       },
-    //     },
-    //   });
-    // }
-
     for (const item of orderData.items) {
       const result = await tx.product.updateMany({
         where: {

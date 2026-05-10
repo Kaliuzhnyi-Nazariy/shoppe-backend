@@ -11,10 +11,6 @@ export const isAuthenticated = async (
   res: Response,
   next: NextFunction,
 ) => {
-  // const cookies = req.cookies;
-
-  // const token = cookies["token"];
-
   const { authorization = "" } = req.headers;
   const [bearer, token] = authorization.split(" ");
 

@@ -13,5 +13,3 @@ export const authorize =
 
     next();
   };
-
-// export default { authorize };

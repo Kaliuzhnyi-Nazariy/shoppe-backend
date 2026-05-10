@@ -7,22 +7,10 @@ import {
   isGuestMode,
 } from "../helpers";
 
-// const getProducts = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const response = await productsService.getProducts();
-//     res.status(200).json(response);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 const getProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await isGuestMode(req);
 
-    // console.log(req.query);
-
-    // const { search } = req.query;
     const { search, lte, gte, stock, sort } = req.query;
     const response = await productsService.getProducts(
       search as string,
@@ -32,7 +20,7 @@ const getProducts = async (req: Request, res: Response, next: NextFunction) => {
       sort as string,
       data,
     );
-    // const response = await productsService.getProducts(search as string, data);
+
     res.status(200).json(response);
   } catch (error) {
     next(error);

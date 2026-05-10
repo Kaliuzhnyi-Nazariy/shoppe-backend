@@ -1,24 +1,5 @@
 import { z } from "zod";
 
-// enum ShippingOptions {
-//   free,
-//   paid,
-// }
-
-// enum OrderStatus {
-//   pending,
-//   paid,
-//   shipping,
-//   delivered,
-//   canceled,
-// }
-
-// enum PaymentMethods {
-//   cashOnDelivery,
-//   stripe,
-//   checkPayment,
-// }
-
 export const orderValidation = z.object({
   billingAddress: z.object({
     firstName: z

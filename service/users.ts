@@ -2,7 +2,6 @@ import { UpdateUser } from "../interfaces/user";
 import { prisma } from "../lib/prisma";
 import { ensureExists, errorHandler } from "../helpers";
 import bcrypt from "bcryptjs";
-// import { Prisma } from "../generated/prisma";
 
 const getUser = async (userId: string) => {
   const res = await prisma.user.findUnique({
@@ -13,14 +12,6 @@ const getUser = async (userId: string) => {
   if (!res) throw errorHandler(404, "User is not found");
 
   return res;
-
-  // return await ensureExists({
-  //   model: prisma.user,
-  //   where: { id: userId },
-  //   entityName: "User",
-  // });
-
-  // return await prisma.user.findUnique({ where: { id: userId } });
 };
 
 const updateUser = async ({

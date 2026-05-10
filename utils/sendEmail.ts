@@ -1,8 +1,3 @@
-// const mailjet = require("node-mailjet").connect(
-//   process.env.MJ_APIKEY_PUBLIC,
-//   process.env.MJ_APIKEY_PRIVATE,
-// );
-
 import Mailjet from "node-mailjet";
 
 const { API_KEY_MAIL, SECRET_KEY_MAIL } = process.env;
@@ -42,13 +37,6 @@ const sendEmail = async ({
       },
     ],
   });
-  //   request
-  //     .then((result) => {
-  //       console.log(result.body);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.statusCode);
-  //     });
 };
 
 export default sendEmail;

@@ -22,7 +22,6 @@ export interface ICartItem {
   id: string;
   quantity: number;
   userId: string | null;
-  // userId: string;
   price: number;
   product: ICartProduct;
 }

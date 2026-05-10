@@ -43,25 +43,6 @@ export const cloudinaryUpload = async (
     console.error(error);
     return [];
   }
-
-  // try {
-  //   const uploadFiles = files.map((f) => {
-  //     return limit(async () => {
-  //       const result = await cloudinary.uploader.upload(f.path, {
-  //         folder: "product_images",
-  //         public_id: `[product_${f.filename}`,
-  //         overwrite: true,
-  //       });
-  //       return result.secure_url;
-  //     });
-  //   });
-
-  //   let uploads = await Promise.all(uploadFiles);
-  //   return uploads;
-  // } catch (error) {
-  //   console.error({ error });
-  //   return [];
-  // }
 };
 
 export const cloudinaryDelete = async (ids: string[]) => {

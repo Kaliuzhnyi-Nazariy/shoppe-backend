@@ -28,14 +28,6 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
 
   const newCart = await service.addToCart({ userId: id, product: req.body });
   res.status(201).json(newCart);
-  // const result = await service.addToCart({ userId: id, product: req.body });
-  // res.sendStatus(204);
-  // try {
-  // await service.addToCart({ userId: id, product: req.body });
-  // res.sendStatus(204);
-  // } catch (error) {
-  //   next(error);
-  // }
 };
 
 const reduceQuantity = async (
@@ -43,10 +35,6 @@ const reduceQuantity = async (
   res: Response,
   next: NextFunction,
 ) => {
-  //   try {
-  //   } catch (error) {
-  //     next(error);
-  //   }
   const { id } = getUserData(req);
 
   const productId = getItemParam(req, res, next);
@@ -58,7 +46,6 @@ const reduceQuantity = async (
   });
 
   res.status(200).json(result);
-  // res.sendStatus(204);
 };
 
 const removeItemFromCart = async (
@@ -81,7 +68,7 @@ const cleanCart = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
 
   const result = await service.cleanCart(id);
-  // res.sendStatus(204);
+
   res.status(200).json(result);
 };
 
@@ -91,12 +78,9 @@ const deleteCart = async (req: Request, res: Response, next: NextFunction) => {
   await service.deleteCart(id);
   res.sendStatus(204);
 };
-// export default { getCart, addToCart, reduceQuantity };
 
 const addMany = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = getUserData(req);
-
-  // console.log(req.body);
 
   const result = await service.addMany(id, req.body);
   res.status(201).json(result);

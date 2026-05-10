@@ -25,8 +25,6 @@ router.post(
   authCtrl.signIn,
 );
 
-// router.post("/signout", isAuthenticated, authCtrl.signOut);
-
 router.post(
   "/password/forget",
   validateBody(forgetPasswordEmailValidation),
