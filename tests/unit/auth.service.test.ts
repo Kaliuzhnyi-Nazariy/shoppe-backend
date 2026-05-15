@@ -21,16 +21,16 @@ jest.mock("../../lib/prisma", () => ({
   },
 }));
 
-jest.mock("bcryptjs");
-jest.mock("jsonwebtoken");
+// jest.mock("bcryptjs");
+// jest.mock("jsonwebtoken");
 
-jest.mock("jose", () => ({
-  jwtVerify: jest.fn(),
-}));
+// jest.mock("jose", () => ({
+//   jwtVerify: jest.fn(),
+// }));
 
-jest.mock("node-mailjet", () => ({
-  apiConnect: jest.fn(),
-}));
+// jest.mock("node-mailjet", () => ({
+//   apiConnect: jest.fn(),
+// }));
 
 const mockedPrisma = prisma as jest.Mocked<typeof prisma>;
 
