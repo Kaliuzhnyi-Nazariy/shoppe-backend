@@ -7,6 +7,8 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
 
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.test.ts"],
+
   roots: ["<rootDir>/tests"],
 
   moduleFileExtensions: ["ts", "js"],
