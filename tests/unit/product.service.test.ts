@@ -1,226 +1,248 @@
-// import { ensureProductExists } from "../../helpers";
-// import { IAddProduct } from "../../interfaces/products";
-// import { prisma } from "../../lib/prisma";
-// import service from "../../service/products";
+jest.mock("../../lib/prisma", () => ({
+  prisma: {
+    product: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+  },
+}));
 
-// jest.mock("../../lib/prisma", () => ({
-//   prisma: {
-//     product: {
-//       findUnique: jest.fn(),
-//       findMany: jest.fn(),
-//       create: jest.fn(),
-//       update: jest.fn(),
-//       delete: jest.fn(),
-//     },
-//   },
-// }));
+import { ensureProductExists, getProductWithPhotos } from "../../helpers";
+import { IAddProduct } from "../../interfaces/products";
+import { prisma } from "../../lib/prisma";
+import service from "../../service/products";
 
-// jest.mock("../../helpers", () => ({
-//   ensureProductExists: jest.fn(),
-// }));
+describe("productService.addProduct", () => {
+  const productData: IAddProduct = {
+    title: "Phone",
+    // amount: 10,
+    price: 249.99,
+    description: "some description added",
+    photos: [{ link: "img1.jpg", id: "id-1" }],
+  };
 
-// describe("productService.addProduct", () => {
-//   const productData: IAddProduct = {
-//     title: "Phone",
-//     // amount: 10,
-//     price: 249.99,
-//     description: "some description added",
-//     photos: ["img1.jpg"],
-//   };
+  const deployedProduct = {
+    id: "product123",
+    ...productData,
+    amount: 0,
+  };
 
-//   const deployedProduct = {
-//     id: "product123",
-//     ...productData,
-//     amount: 0,
-//   };
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+  it("should return new product", async () => {
+    (prisma.product.create as jest.Mock).mockResolvedValue(deployedProduct);
 
-//   it("should return new product", async () => {
-//     (prisma.product.create as jest.Mock).mockResolvedValue(deployedProduct);
+    const result = await service.addProducts(productData);
 
-//     const result = await service.addProducts(productData);
+    console.log({ productData });
 
-//     expect(prisma.product.create).toHaveBeenCalledWith({
-//       data: {
-//         ...productData,
-//         additionalInformation: "",
-//         amount: 0,
-//         isArchived: false,
-//       },
-//     });
+    expect(prisma.product.create).toHaveBeenCalledWith({
+      data: {
+        ...productData,
+        additionalInformation: "",
+        amount: 0,
+        isArchived: false,
+        photos: {
+          create: productData.photos,
+        },
+      },
+    });
 
-//     expect(result).toEqual(deployedProduct);
-//   });
-// });
+    expect(result).toEqual(deployedProduct);
+  });
+});
 
-// describe("productService.updateProduct", () => {
-//   const productId = "product123";
+describe("productService.updateProduct", () => {
+  const productId = "product123";
 
-//   const data = {
-//     id: "product123",
-//     createdAt: "2026-03-10T07:47:17.283Z",
-//     updatedAt: "2026-03-10T08:02:07.702Z",
-//     title: "IPhone",
-//     price: 269.99,
-//     description: "some description added",
-//     additionalInformation: "",
-//     rate: 0,
-//     amount: 201,
-//     photos: [],
-//     isArchived: false,
-//   };
+  const data = {
+    id: "product123",
+    createdAt: "2026-03-10T07:47:17.283Z",
+    updatedAt: "2026-03-10T08:02:07.702Z",
+    title: "IPhone",
+    price: 269.99,
+    description: "some description added",
+    additionalInformation: "",
+    rate: 0,
+    amount: 201,
+    photos: [],
+    isArchived: false,
+  };
 
-//   const updateBody = {
-//     title: "IPhone 7",
-//     price: 169.99,
-//     description: "some description added",
-//     additionalInformation: "",
-//     photos: [],
-//   };
+  const updateBody = {
+    title: "IPhone 7",
+    price: 169.99,
+    description: "some description added",
+    additionalInformation: "",
+    photos: [],
+  };
 
-//   const newData = {
-//     id: "product123",
-//     createdAt: "2026-03-10T07:47:17.283Z",
-//     updatedAt: "2026-03-10T08:02:07.702Z",
-//     title: "IPhone 7",
-//     price: 169.99,
-//     description: "some description added",
-//     additionalInformation: "",
-//     rate: 0,
-//     amount: 201,
-//     photos: [],
-//     isArchived: false,
-//   };
+  const newData = {
+    id: "product123",
+    createdAt: "2026-03-10T07:47:17.283Z",
+    updatedAt: "2026-03-10T08:02:07.702Z",
+    title: "IPhone 7",
+    price: 169.99,
+    description: "some description added",
+    additionalInformation: "",
+    rate: 0,
+    amount: 201,
+    photos: [],
+    isArchived: false,
+  };
 
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+  const newSendData = {
+    productId: "product123",
+    data: {
+      title: "IPhone",
+      price: 269.99,
+      description: "some description added",
+      additionalInformation: "",
+      rate: 0,
+      amount: 201,
+      newPhotos: [],
+      isArchived: false,
+      photos: [],
+    },
+  };
 
-//   it("should update product", async () => {
-//     (ensureProductExists as jest.Mock).mockResolvedValue(data);
-//     (prisma.product.update as jest.Mock).mockResolvedValue(newData);
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     const result = await service.updateProduct({
-//       productId,
-//       data: {
-//         ...updateBody,
-//         rate: 0,
-//         amount: 201,
-//         isArchived: false,
-//       },
-//     });
+  it("should update product", async () => {
+    (getProductWithPhotos as jest.Mock).mockResolvedValue(data);
+    (prisma.product.update as jest.Mock).mockResolvedValue(newData);
 
-//     expect(ensureProductExists).toHaveBeenCalledWith(productId);
+    const result = await service.updateProduct({
+      productId,
+      data: {
+        ...updateBody,
+        rate: 0,
+        amount: 201,
+        isArchived: false,
+        newPhotos: [],
+      },
+    });
 
-//     expect(prisma.product.update).toHaveBeenCalledWith({
-//       where: { id: productId },
-//       data: {
-//         ...updateBody,
-//         rate: 0,
-//         amount: 201,
-//         isArchived: false,
-//       },
-//     });
+    expect(getProductWithPhotos).toHaveBeenCalledWith(productId);
 
-//     expect(result).toEqual(newData);
-//   });
+    expect(prisma.product.update).toHaveBeenCalledWith({
+      where: { id: productId },
+      data: {
+        ...updateBody,
+        rate: 0,
+        amount: 201,
+        isArchived: false,
+        photos: {
+          create: updateBody.photos,
+          deleteMany: {},
+        },
+      },
+    });
 
-//   it("should return an error because product not found", async () => {
-//     (ensureProductExists as jest.Mock).mockRejectedValue(
-//       new Error("Product is not found"),
-//     );
+    expect(result).toEqual(newData);
+  });
 
-//     await expect(service.updateProduct({ productId, data })).rejects.toThrow(
-//       "Product is not found",
-//     );
+  it("should return an error because product not found", async () => {
+    (getProductWithPhotos as jest.Mock).mockRejectedValue(
+      new Error("Product is not found"),
+    );
 
-//     expect(prisma.product.update).not.toHaveBeenCalled();
-//   });
-// });
+    await expect(
+      // service.updateProduct({ productId, data: newSendData }),
+      service.updateProduct(newSendData),
+    ).rejects.toThrow("Product is not found");
 
-// describe("productService.updateProductAmount", () => {
-//   const productId = "product123";
+    expect(prisma.product.update).not.toHaveBeenCalled();
+  });
+});
 
-//   const data = {
-//     id: "product123",
-//     createdAt: "2026-03-10T07:47:17.283Z",
-//     updatedAt: "2026-03-10T08:02:07.702Z",
-//     title: "IPhone",
-//     price: 269.99,
-//     description: "some description added",
-//     additionalInformation: "",
-//     rate: 0,
-//     amount: 201,
-//     photos: [],
-//     isArchived: false,
-//   };
+describe("productService.updateProductAmount", () => {
+  const productId = "product123";
 
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+  const data = {
+    id: "product123",
+    createdAt: "2026-03-10T07:47:17.283Z",
+    updatedAt: "2026-03-10T08:02:07.702Z",
+    title: "IPhone",
+    price: 269.99,
+    description: "some description added",
+    additionalInformation: "",
+    rate: 0,
+    amount: 201,
+    photos: [],
+    isArchived: false,
+  };
 
-//   it("should update product amount", async () => {
-//     (ensureProductExists as jest.Mock).mockResolvedValue(data);
-//     (prisma.product.update as jest.Mock).mockResolvedValue(null);
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     await service.updateProductAmount(productId, 155);
+  it("should update product amount", async () => {
+    (ensureProductExists as jest.Mock).mockResolvedValue(data);
+    (prisma.product.update as jest.Mock).mockResolvedValue(null);
 
-//     expect(ensureProductExists).toHaveBeenCalledWith(productId);
-//     expect(prisma.product.update).toHaveBeenCalled();
-//   });
+    await service.updateProductAmount(productId, 155);
 
-//   it("should return error because product is not found", async () => {
-//     (ensureProductExists as jest.Mock).mockRejectedValue(
-//       new Error("Product is not found"),
-//     );
+    expect(ensureProductExists).toHaveBeenCalledWith(productId);
+    expect(prisma.product.update).toHaveBeenCalled();
+  });
 
-//     await expect(service.updateProductAmount(productId, 5)).rejects.toThrow(
-//       "Product is not found",
-//     );
-//     expect(prisma.product.update).not.toHaveBeenCalled();
-//   });
-// });
+  it("should return error because product is not found", async () => {
+    (ensureProductExists as jest.Mock).mockRejectedValue(
+      new Error("Product is not found"),
+    );
 
-// describe("productService.archiveProduct", () => {
-//   const productId = "product123";
+    await expect(service.updateProductAmount(productId, 5)).rejects.toThrow(
+      "Product is not found",
+    );
+    expect(prisma.product.update).not.toHaveBeenCalled();
+  });
+});
 
-//   const data = {
-//     id: "product123",
-//     createdAt: "2026-03-10T07:47:17.283Z",
-//     updatedAt: "2026-03-10T08:02:07.702Z",
-//     title: "IPhone",
-//     price: 269.99,
-//     description: "some description added",
-//     additionalInformation: "",
-//     rate: 0,
-//     amount: 201,
-//     photos: [],
-//     isArchived: false,
-//   };
+describe("productService.archiveProduct", () => {
+  const productId = "product123";
 
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+  const data = {
+    id: "product123",
+    createdAt: "2026-03-10T07:47:17.283Z",
+    updatedAt: "2026-03-10T08:02:07.702Z",
+    title: "IPhone",
+    price: 269.99,
+    description: "some description added",
+    additionalInformation: "",
+    rate: 0,
+    amount: 201,
+    photos: [],
+    isArchived: false,
+  };
 
-//   it("should archive product", async () => {
-//     (ensureProductExists as jest.Mock).mockResolvedValue(data);
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     await service.archiveProduct(productId);
-//     expect(ensureProductExists).toHaveBeenCalledWith(productId);
-//     expect(prisma.product.update).toHaveBeenCalled();
-//   });
+  it("should archive product", async () => {
+    (ensureProductExists as jest.Mock).mockResolvedValue(data);
 
-//   it("should return an error as product is not found", async () => {
-//     (ensureProductExists as jest.Mock).mockRejectedValue(
-//       new Error("Product is not found"),
-//     );
+    await service.archiveProduct(productId);
+    expect(ensureProductExists).toHaveBeenCalledWith(productId);
+    expect(prisma.product.update).toHaveBeenCalled();
+  });
 
-//     await expect(service.archiveProduct(productId)).rejects.toThrow(
-//       "Product is not found",
-//     );
-//     expect(prisma.product.update).not.toHaveBeenCalled();
-//   });
-// });
+  it("should return an error as product is not found", async () => {
+    (ensureProductExists as jest.Mock).mockRejectedValue(
+      new Error("Product is not found"),
+    );
+
+    await expect(service.archiveProduct(productId)).rejects.toThrow(
+      "Product is not found",
+    );
+    expect(prisma.product.update).not.toHaveBeenCalled();
+  });
+});
