@@ -14,6 +14,15 @@ jest.mock("../utils/sendEmail.ts", () => ({
 }));
 
 jest.mock("../helpers/cloudinary", () => ({
-  uploadImages: jest.fn(),
-  deleteImage: jest.fn(),
+  cloudinaryUpload: jest.fn(),
+  cloudinaryDelete: jest.fn(),
+}));
+
+jest.mock("../helpers/ensureExists.ts", () => ({
+  ensureExists: jest.fn(),
+}));
+
+jest.mock("../helpers/ensureProductExists.ts", () => ({
+  ensureProductExists: jest.fn(),
+  getProductWithPhotos: jest.fn(),
 }));
