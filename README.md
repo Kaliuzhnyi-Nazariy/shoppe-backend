@@ -268,5 +268,5 @@ Authorization: Bearer <token>
     "price": 0,
     "updatedAt": "2026-04-29T14:05:23.397Z",
     "reviewCount": 0
-    }
+}
 ```
