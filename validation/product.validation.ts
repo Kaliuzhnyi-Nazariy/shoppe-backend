@@ -25,6 +25,6 @@ export const UpdateProductValidation = z.object({
   additionalInformation: z.string().optional(),
 
   price: z.string(),
-  amount: z.string().optional(),
+  amount: z.string(),
   photos: z.array(z.string()).or(z.string()).optional(),
 });

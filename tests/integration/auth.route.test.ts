@@ -1,275 +1,239 @@
-// import request from "supertest";
-// import app from "../../app";
-// import authService from "../../service/auth";
+jest.mock("../../service/auth");
 
-// import errorHandler from "../../helpers/errorHandler";
-// import { jwtVerify } from "jose";
+jest.mock("../../lib/prisma", () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}));
 
-// jest.mock("../../service/auth");
-// jest.mock("jsonwebtoken");
-// jest.mock("jose", () => ({
-//   jwtVerify: jest.fn(),
-// }));
+import request from "supertest";
+import app from "../../app";
+import authService from "../../service/auth";
 
-// describe("POST /auth/signup", () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+import errorHandler from "../../helpers/errorHandler";
+import { prisma } from "../../lib/prisma";
 
-//   const mockedResolvedValueForAuth = {
-//     token: "mocked_token",
-//   };
+describe("POST /auth/signup", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   it("should create user", async () => {
-//     const signUpData = {
-//       firstName: "Jhon",
-//       lastName: "Doe",
-//       displayName: "sth",
-//       email: "test@test.com",
-//       password: "password123",
-//       confirmPassword: "password123",
-//       role: "customer",
-//     };
+  const mockedResolvedValueForAuth = {
+    token: "mocked_token",
+  };
 
-//     (authService.signUp as jest.Mock).mockResolvedValue(
-//       mockedResolvedValueForAuth,
-//     );
+  it("should create user", async () => {
+    const signUpData = {
+      firstName: "Jhon",
+      lastName: "Doe",
+      displayName: "sth",
+      email: "test@test.com",
+      password: "password123",
+      confirmPassword: "password123",
+      role: "customer",
+    };
 
-//     const res = await request(app).post("/api/auth/signup").send(signUpData);
+    (authService.signUp as jest.Mock).mockResolvedValue(
+      mockedResolvedValueForAuth,
+    );
 
-//     expect(authService.signUp).toHaveBeenCalledWith(signUpData);
+    const res = await request(app).post("/api/auth/signup").send(signUpData);
 
-//     expect(res.body).toEqual(mockedResolvedValueForAuth);
-//     expect(res.status).toBe(201);
-//     // expect(res.headers["set-cookie"][0]).toContain("token=");
-//   });
+    expect(authService.signUp).toHaveBeenCalledWith(signUpData);
 
-//   it("should return an error as no password", async () => {
-//     const signUpDataNoConfirmationPassword = {
-//       firstName: "Jhon",
-//       lastName: "Doe",
-//       displayName: "sth",
-//       email: "test@test.com",
-//       password: "password123",
-//     };
+    expect(res.body).toEqual(mockedResolvedValueForAuth);
+    expect(res.status).toBe(201);
+    // expect(res.headers["set-cookie"][0]).toContain("token=");
+  });
 
-//     const res = await request(app)
-//       .post("/api/auth/signup")
-//       .send(signUpDataNoConfirmationPassword);
+  it("should return an error as no password", async () => {
+    const signUpDataNoConfirmationPassword = {
+      firstName: "Jhon",
+      lastName: "Doe",
+      displayName: "sth",
+      email: "test@test.com",
+      password: "password123",
+    };
 
-//     expect(res.status).toBe(400);
-//     expect(res.body).toEqual(
-//       expect.arrayContaining([
-//         expect.objectContaining({ field: "confirmPassword" }),
-//       ]),
-//     );
-//   });
+    const res = await request(app)
+      .post("/api/auth/signup")
+      .send(signUpDataNoConfirmationPassword);
 
-//   it("should return an error as user already exists", async () => {
-//     const data = {
-//       firstName: "Jhon",
-//       lastName: "Doe",
-//       displayName: "sth",
-//       email: "test@test.com",
-//       password: "password123",
-//       confirmPassword: "password123",
-//     };
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ field: "confirmPassword" }),
+      ]),
+    );
+  });
 
-//     (authService.signUp as jest.Mock).mockRejectedValue(
-//       errorHandler(409, "User already exists"),
-//     );
+  it("should return an error as user already exists", async () => {
+    const data = {
+      firstName: "Jhon",
+      lastName: "Doe",
+      displayName: "sth",
+      email: "test@test.com",
+      password: "password123",
+      confirmPassword: "password123",
+    };
 
-//     const res = await request(app).post("/api/auth/signup").send(data);
+    (authService.signUp as jest.Mock).mockRejectedValue(
+      errorHandler(409, "User already exists"),
+    );
 
-//     expect(res.status).toBe(409);
-//   });
-// });
+    const res = await request(app).post("/api/auth/signup").send(data);
 
-// describe("POST /auth/signin", () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+    expect(res.status).toBe(409);
+  });
+});
 
-//   const data = {
-//     email: "test@test.com",
-//     password: "password123",
-//   };
+describe("POST /auth/signin", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   // const mockData = {
-//   //   id: "user123",
-//   //   role: "customer",
-//   // };
-//   const mockedResolvedValueForAuth = {
-//     token: "mocked_token",
-//   };
+  const data = {
+    email: "test@test.com",
+    password: "Password123",
+  };
 
-//   it("should set token", async () => {
-//     (authService.signIn as jest.Mock).mockResolvedValue(
-//       mockedResolvedValueForAuth,
-//     );
+  // const mockData = {
+  //   id: "user123",
+  //   role: "customer",
+  // };
+  const mockedResolvedValueForAuth = {
+    token: "mocked_token",
+  };
 
-//     const res = await request(app).post("/api/auth/signin").send(data);
+  it("should return token", async () => {
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+      id: "user123",
+      email: "test@test.com",
+      isPasswordSet: true,
+    });
 
-//     expect(authService.signIn).toHaveBeenCalledWith(data);
+    (authService.signIn as jest.Mock).mockResolvedValue(
+      mockedResolvedValueForAuth,
+    );
 
-//     expect(res.status).toBe(200);
-//     expect(res.body).toEqual(mockedResolvedValueForAuth);
-//     // expect(res.headers["set-cookie"][0]).toContain("token=");
-//   });
+    const res = await request(app).post("/api/auth/signin").send(data);
 
-//   it("should return an error as no user", async () => {
-//     (authService.signIn as jest.Mock).mockRejectedValue(
-//       errorHandler(401, "User not found"),
-//     );
+    expect(authService.signIn).toHaveBeenCalledWith(data);
 
-//     const res = await request(app).post("/api/auth/signin").send(data);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(mockedResolvedValueForAuth);
+  });
 
-//     expect(authService.signIn).toHaveBeenCalledWith(data);
-//     expect(res.status).toBe(401);
-//     expect(res.headers["set-cookie"]).not.toBeDefined();
-//   });
+  it("should return an error as no user", async () => {
+    (authService.signIn as jest.Mock).mockRejectedValue(
+      errorHandler(401, "User not found"),
+    );
 
-//   it("should return an error as no email field", async () => {
-//     const res = await request(app)
-//       .post("/api/auth/signin")
-//       .send({ email: "", password: data.password });
+    const res = await request(app).post("/api/auth/signin").send(data);
 
-//     expect(res.status).toBe(400);
-//     expect(res.body).toEqual(
-//       expect.arrayContaining([expect.objectContaining({ field: "email" })]),
-//     );
-//   });
-// });
+    expect(authService.signIn).toHaveBeenCalledWith(data);
+    expect(res.status).toBe(401);
+    expect(res.headers["set-cookie"]).not.toBeDefined();
+  });
 
-// // describe("POST /auth/signout", () => {
-// //   beforeEach(() => {
-// //     jest.clearAllMocks();
-// //   });
+  it("should return an error as no email field", async () => {
+    const res = await request(app)
+      .post("/api/auth/signin")
+      .send({ email: "", password: data.password });
 
-// //   const token = "token_123";
-// //   const token_data = {
-// //     id: "user123",
-// //     role: "customer",
-// //   };
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: "email" })]),
+    );
+  });
+});
 
-// //   it("should remove token", async () => {
-// //     (jwtVerify as jest.Mock).mockResolvedValue({ payload: token_data });
+describe("POST /auth/password/forget", () => {
+  it("should send token", async () => {
+    (authService.forgetPassword as jest.Mock).mockResolvedValue({
+      token: "token",
+    });
 
-// //     const res = await request(app)
-// //       .post("/api/auth/signout")
-// //       .set("Cookie", [`token=${token}`]);
+    const res = await request(app)
+      .post("/api/auth/password/forget")
+      .send({ email: "test@mail.com" });
 
-// //     expect(res.status).toBe(204);
-// //     expect(res.headers["set-cookie"]).toBeDefined();
-// //     expect(res.headers["set-cookie"][0]).toContain("token=");
-// //   });
+    expect(authService.forgetPassword).toHaveBeenCalledWith("test@mail.com");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ token: "token" });
+  });
 
-// //   it("should return an error as no token", async () => {
-// //     (jwtVerify as jest.Mock).mockRejectedValue(errorHandler(401));
+  it("should return an error as no email found", async () => {
+    (authService.forgetPassword as jest.Mock).mockRejectedValue(
+      errorHandler(404, "If the email exists, we sent a reset link."),
+    );
 
-// //     const res = await request(app)
-// //       .post("/api/auth/signout")
-// //       .set("Cookie", [`token = ${token}`]);
+    const res = await request(app)
+      .post("/api/auth/password/forget")
+      .send({ email: "esrse@mail.com" });
 
-// //     expect(res.status).toBe(401);
-// //   });
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      message: "If the email exists, we sent a reset link.",
+    });
+  });
 
-// //   it("should return an error as token invalid", async () => {
-// //     (jwtVerify as jest.Mock).mockRejectedValue(errorHandler(401));
+  it("should return an error as no email sent", async () => {
+    const res = await request(app)
+      .post("/api/auth/password/forget")
+      .send({ email: "" });
 
-// //     const res = await request(app)
-// //       .post("/api/auth/signout")
-// //       .set("Cookie", [`token=${token}`]);
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: "email" })]),
+    );
 
-// //     expect(res.status).toBe(401);
-// //     expect(res.headers["set-cookie"]).toBeUndefined();
-// //   });
-// // });
+    expect(authService.forgetPassword).not.toHaveBeenCalled();
+  });
+});
 
-// describe("POST /auth/password/forget", () => {
-//   it("should send token", async () => {
-//     (authService.forgetPassword as jest.Mock).mockResolvedValue({
-//       token: "token",
-//     });
+describe("PATCH /api/auth/password/reset/:tokenId", () => {
+  const reqBody = {
+    token: "user_change_token",
+    password: "password132",
+    confirmPassword: "password132",
+  };
 
-//     const res = await request(app)
-//       .post("/api/auth/password/forget")
-//       .send({ email: "test@mail.com" });
+  it("should update password and return status 204", async () => {
+    (authService.resetPassword as jest.Mock).mockResolvedValue(null);
 
-//     expect(authService.forgetPassword).toHaveBeenCalledWith("test@mail.com");
-//     expect(res.status).toBe(200);
-//     expect(res.body).toEqual({ token: "token" });
-//   });
+    const res = await request(app)
+      .patch("/api/auth/password/reset")
+      .send(reqBody);
 
-//   it("should return an error as no email found", async () => {
-//     (authService.forgetPassword as jest.Mock).mockRejectedValue(
-//       errorHandler(404, "If the email exists, we sent a reset link."),
-//     );
+    expect(authService.resetPassword).toHaveBeenCalledWith(
+      reqBody.token,
+      reqBody.password,
+      reqBody.confirmPassword,
+    );
 
-//     const res = await request(app)
-//       .post("/api/auth/password/forget")
-//       .send({ email: "esrse@mail.com" });
+    expect(res.status).toBe(204);
+  });
 
-//     expect(res.status).toBe(404);
-//     expect(res.body).toEqual({
-//       message: "If the email exists, we sent a reset link.",
-//     });
-//   });
+  it("should return error as confirmPassword is not match password", async () => {
+    const res = await request(app)
+      .patch("/api/auth/password/reset/")
+      .send({ password: reqBody.password, confirmPassword: "password" });
 
-//   it("should return an error as no email sent", async () => {
-//     const res = await request(app)
-//       .post("/api/auth/password/forget")
-//       .send({ email: "" });
+    expect(res.status).toBe(400);
+  });
 
-//     expect(res.status).toBe(400);
-//     expect(res.body).toEqual(
-//       expect.arrayContaining([expect.objectContaining({ field: "email" })]),
-//     );
+  it("should return error when token invalid", async () => {
+    (authService.resetPassword as jest.Mock).mockRejectedValue(
+      errorHandler(400, "Token is not valid"),
+    );
 
-//     expect(authService.forgetPassword).not.toHaveBeenCalled();
-//   });
-// });
+    const res = await request(app)
+      .patch(`/api/auth/password/reset`)
+      .send(reqBody);
 
-// describe("PATCH /api/auth/password/reset/:tokenId", () => {
-//   const tokenId = "user_change_token";
-//   const reqBody = {
-//     password: "password132",
-//     confirmPassword: "password132",
-//   };
-
-//   it("should update password and return status 204", async () => {
-//     (authService.resetPassword as jest.Mock).mockResolvedValue(null);
-
-//     const res = await request(app)
-//       .patch("/api/auth/password/reset/" + tokenId)
-//       .send(reqBody);
-
-//     expect(authService.resetPassword).toHaveBeenCalledWith(
-//       tokenId,
-//       reqBody.password,
-//       reqBody.confirmPassword,
-//     );
-
-//     expect(res.status).toBe(204);
-//   });
-
-//   it("should return error as confirmPassword is not match password", async () => {
-//     const res = await request(app)
-//       .patch("/api/auth/password/reset/" + tokenId)
-//       .send({ password: reqBody.password, confirmPassword: "password" });
-
-//     expect(res.status).toBe(400);
-//   });
-
-//   it("should return error when token invalid", async () => {
-//     (authService.resetPassword as jest.Mock).mockRejectedValue(
-//       errorHandler(400, "Token is not valid"),
-//     );
-
-//     const res = await request(app)
-//       .patch(`/api/auth/password/reset/${tokenId}`)
-//       .send(reqBody);
-
-//     expect(res.status).toBe(400);
-//   });
-// });
+    expect(res.status).toBe(400);
+  });
+});
