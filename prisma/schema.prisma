@@ -70,7 +70,7 @@ model Review {
   id        String   @id @default(uuid())
   productId String
   userId    String
-  rating    Int
+  rating    Float
   comment   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -251,6 +251,15 @@ model Downloads {
 
   userId String?
   totalPrice String?
+
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id String @id @default(uuid())
+
+  title String
+  content Json
 
   createdAt DateTime @default(now())
 }
