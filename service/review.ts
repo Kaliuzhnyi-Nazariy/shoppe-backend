@@ -2,123 +2,184 @@ import { Prisma } from "../generated/prisma";
 import { ensureExists, errorHandler } from "../helpers";
 import { prisma } from "../lib/prisma";
 
-export interface IAddReview {
-  productId: string;
-  userId: string;
-  comment: string;
-  rating: number;
-}
+import * as crypto from "node:crypto";
+import bcrypt from "bcryptjs";
+import { sendEmail } from "../utils";
+import { IAddReview, UpdateReview } from "../interfaces/reviews";
 
-export type UpdateReview = Omit<IAddReview, "rating">;
+const getReviews = async (productId: string) => {
+  return await prisma.review.findMany({
+    where: { productId },
+    include: {
+      user: {
+        select: { displayName: true },
+      },
+    },
+  });
+};
 
-const checkIfExist = async ({
-  userId,
+const addReview = async ({
   productId,
-}: {
-  userId: string;
-  productId: string;
-}) => {
+  email,
+  name,
+  rating,
+  comment,
+}: IAddReview) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
   await ensureExists({
     model: prisma.product,
     where: { id: productId },
     entityName: "Product",
   });
 
-  await ensureExists({
-    model: prisma.user,
-    where: { id: userId },
-    entityName: "User",
+  let userId = "";
+
+  if (!user) {
+    const password = crypto.randomBytes(20).toString("hex");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.$transaction(async (tx) => {
+      const { id, firstName, lastName } = await tx.user.create({
+        data: {
+          email,
+          displayName: name,
+          firstName: name,
+          lastName: "",
+          password: hashedPassword,
+          isPasswordSet: false,
+        },
+      });
+
+      const isTokenExist = await tx.passwordResetTokens.findUnique({
+        where: { userId: id },
+      });
+
+      if (isTokenExist) {
+        await tx.passwordResetTokens.delete({
+          where: { id: isTokenExist.id },
+        });
+      }
+
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 15);
+
+      const { id: idToResetPassword } = await tx.passwordResetTokens.create({
+        data: {
+          userId: id,
+          expiresAt,
+        },
+      });
+
+      try {
+        sendEmail({
+          email,
+          name: firstName + " " + lastName,
+          token: idToResetPassword,
+        });
+      } catch (error) {
+        throw errorHandler(500, "sth went wrong");
+      }
+
+      userId = id;
+    });
+  } else {
+    userId = user.id;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.review.create({
+      data: {
+        comment,
+        rating,
+        userId,
+        productId,
+      },
+    });
+
+    const stats = await tx.review.aggregate({
+      where: { productId },
+      _avg: {
+        rating: true,
+      },
+      _count: {
+        rating: true,
+      },
+    });
+
+    await tx.product.update({
+      where: { id: productId },
+      data: {
+        reviewCount: stats._count.rating,
+        rate: stats._avg.rating ?? 0,
+      },
+    });
   });
 };
 
-const getReviews = async (productId: string) => {
-  return await prisma.review.findMany({ where: { productId } });
-};
-
-const addReview = async ({
-  productId,
+const updateReview = async ({
+  reviewId,
   userId,
-  rating,
   comment,
-}: IAddReview) => {
-  await checkIfExist({ userId, productId });
-
+  rating,
+}: UpdateReview) => {
   try {
     return await prisma.$transaction(async (tx) => {
-      await tx.review.create({
-        data: {
-          productId,
+      const data = await tx.review.findUnique({
+        where: { id: reviewId },
+      });
+
+      await tx.review.update({
+        where: {
           userId,
-          rating,
+          id: reviewId,
+        },
+        data: {
           comment,
+          rating,
         },
       });
 
       const stats = await tx.review.aggregate({
-        where: { productId },
-        _avg: {
-          rating: true,
+        where: {
+          productId: data?.productId,
         },
-        _count: {
-          rating: true,
-        },
+        _avg: { rating: true },
       });
 
       await tx.product.update({
-        where: { id: productId },
+        where: { id: data?.productId },
         data: {
-          reviewCount: stats._count.rating,
           rate: stats._avg.rating ?? 0,
         },
       });
     });
   } catch (error) {
-    if ((error as Prisma.PrismaClientKnownRequestError).code == "P2002") {
-      throw errorHandler(409, "Review already exists");
-    } else {
-      throw error;
-    }
-  }
-};
-
-const updateReview = async ({ productId, userId, comment }: UpdateReview) => {
-  try {
-    return await prisma.review.update({
-      where: {
-        productId_userId: {
-          productId,
-          userId,
-        },
-      },
-      data: {
-        comment,
-      },
-    });
-  } catch (error) {
     if ((error as Prisma.PrismaClientKnownRequestError).code === "P2025") {
       throw errorHandler(404, "Review not found");
     }
-
     throw error;
   }
 };
 
 const deleteReview = async ({
   userId,
-  productId,
+  reviewId,
 }: {
   userId: string;
-  productId: string;
+  reviewId: string;
 }) => {
-  await checkIfExist({ userId, productId });
+  await ensureExists({
+    model: prisma.user,
+    where: { id: userId },
+    entityName: "User",
+  });
 
   const review = await ensureExists({
     model: prisma.review,
     where: {
-      productId_userId: {
-        productId,
-        userId,
-      },
+      id: reviewId,
+      userId,
     },
     entityName: "Review",
   });
@@ -146,6 +207,8 @@ const deleteReview = async ({
       },
     });
   });
+
+  return review;
 };
 
 export default {

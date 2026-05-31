@@ -12,18 +12,17 @@ router.get("/:productId", ctrl.getReviews);
 
 router.post(
   "/post/:productId",
-  isAuthenticated,
   validateBody(addReviewValidation),
   ctrl.addReview,
 );
 
 router.put(
-  "/update/:productId",
+  "/update/:reviewId",
   isAuthenticated,
   validateBody(updateReviewValidation),
   ctrl.updateReview,
 );
 
-router.delete("/delete/:productId", isAuthenticated, ctrl.deleteReview);
+router.delete("/delete/:reviewId", isAuthenticated, ctrl.deleteReview);
 
 export default router;
