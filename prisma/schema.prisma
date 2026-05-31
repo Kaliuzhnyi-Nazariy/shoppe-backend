@@ -83,6 +83,7 @@ model Review {
   @@index([userId])
 }
 
+
 model Order {
   id        String   @id @unique @default(uuid())
   createdAt DateTime @default(now())
@@ -249,7 +250,7 @@ model Downloads {
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String
 
-  userId String?
+  userId     String?
   totalPrice String?
 
   createdAt DateTime @default(now())
@@ -258,7 +259,7 @@ model Downloads {
 model Post {
   id String @id @default(uuid())
 
-  title String
+  title   String
   content Json
 
   createdAt DateTime @default(now())
