@@ -7,6 +7,7 @@ import orderRoutes from "./order";
 import cartRoutes from "./cart";
 import addressRoutes from "./address";
 import downloadRoutes from "./download";
+import reviewsRoutes from "./reviews";
 import { errorHandler, notFoundRouteHandler } from "../handlers";
 
 const router = Router();
@@ -24,6 +25,8 @@ router.use("/api/cart", cartRoutes);
 router.use("/api/address", addressRoutes);
 
 router.use("/api/downloads", downloadRoutes);
+
+router.use("/api/reviews", reviewsRoutes);
 
 router.use(notFoundRouteHandler);
 

@@ -6,6 +6,7 @@ import {
   getParam,
   isGuestMode,
 } from "../helpers";
+import { Categories } from "@prisma/client";
 
 const getProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -55,6 +56,9 @@ const addProduct = async (req: Request, res: Response, next: NextFunction) => {
       price: Number(req.body.price),
       amount: Number(req.body.amount) || 0,
       photos,
+      categories: Array.isArray(req.body.categories)
+        ? req.body.categories
+        : [req.body.categories],
     });
     res.status(201).json(newProduct);
   } catch (error) {
@@ -82,6 +86,9 @@ const updateProduct = async (
       price: Number(req.body.price),
       amount: Number(req.body.amount),
       newPhotos,
+      categories: Array.isArray(req.body.categories)
+        ? req.body.categories
+        : [req.body.categories],
     },
   });
 
@@ -148,6 +155,14 @@ const getProductStats = async (
   res.status(200).json(result);
 };
 
+export const getProductByCategory = async (req: Request, res: Response) => {
+  const category = getParam(req, "category", "Category") as Categories;
+
+  const result = await productsService.getProductsByCategory(category);
+
+  res.status(200).send(result);
+};
+
 export default {
   getProducts,
   getProductById,
@@ -157,4 +172,5 @@ export default {
   updateProductAmount,
   archiveProduct,
   getProductStats: controllerWrapper(getProductStats),
+  getProductByCategory: controllerWrapper(getProductByCategory),
 };

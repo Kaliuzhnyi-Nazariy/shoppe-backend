@@ -16,6 +16,7 @@ const PRODUCTS = [
         link: "https://images.unsplash.com/photo-1527814050087-3793815479db",
       },
     ],
+    categoris: ["ELECTRONICS", "GAMING"],
   },
 
   {
@@ -31,6 +32,7 @@ const PRODUCTS = [
         link: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae",
       },
     ],
+    categoris: ["ELECTRONICS", "GAMING"],
   },
   {
     title: "Apple Studio Display",
@@ -55,6 +57,7 @@ const PRODUCTS = [
         link: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
       },
     ],
+    categoris: ["ELECTRONICS", "HOME"],
   },
   {
     title: "SteelSeries Arctis Nova Pro",
@@ -71,6 +74,7 @@ const PRODUCTS = [
         link: "https://images.unsplash.com/photo-1546435770-a3e426bf472b",
       },
     ],
+    categoris: ["ELECTRONICS", "OTHER"],
   },
 ];
 
