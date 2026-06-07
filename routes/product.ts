@@ -19,6 +19,8 @@ router.get("/stats", productsCtrl.getProductStats);
 
 router.get("/:productId", productsCtrl.getProductById);
 
+router.get("/category/:category", productsCtrl.getProductByCategory);
+
 router.post(
   "/",
   isAuthenticated,

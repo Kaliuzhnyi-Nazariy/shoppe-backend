@@ -1,3 +1,5 @@
+import { Categories } from "@prisma/client";
+import { Product } from "../generated/prisma";
 import {
   cloudinaryDelete,
   ensureProductExists,
@@ -6,6 +8,15 @@ import {
 } from "../helpers";
 import { IAddProduct, IUpdateProduct } from "../interfaces/products";
 import { prisma } from "../lib/prisma";
+
+const getProductsByCategory = async (category: Categories) => {
+  const res = await prisma.product.findMany({
+    where: { categories: { has: category } },
+    include: { photos: true },
+  });
+
+  return res;
+};
 
 const getProducts = async (
   serach: string,
@@ -66,6 +77,7 @@ const addProducts = async (data: IAddProduct) => {
     additionalInformation = "",
     photos = [],
     amount = 0,
+    categories,
   } = data;
 
   const res = await prisma.product.create({
@@ -82,6 +94,7 @@ const addProducts = async (data: IAddProduct) => {
         })),
       },
       amount,
+      categories,
     },
   });
 
@@ -106,6 +119,7 @@ const updateProduct = async ({
     price,
     title,
     newPhotos,
+    categories,
   } = data;
 
   let photosForUpd: Photo[];
@@ -141,6 +155,10 @@ const updateProduct = async ({
     ...(newPhotos ?? []),
   ] as unknown as Photo[];
 
+  const cleanCategories = Array.isArray(categories)
+    ? categories.filter((c) => c !== undefined && c !== null)
+    : undefined;
+
   const updatedProduct = await prisma.product.update({
     where: { id: productId },
     data: {
@@ -158,6 +176,7 @@ const updateProduct = async ({
         })),
       },
       rate: product.rate,
+      categories,
     },
   });
 
@@ -209,4 +228,5 @@ export default {
   archiveProduct,
   deleteProduct,
   getMinMaxPrice,
+  getProductsByCategory,
 };

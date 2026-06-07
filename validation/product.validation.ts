@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+const CATEGORY_OPTIONS = [
+  "ELECTRONICS",
+  "GAMING",
+  "HOME",
+  "OTHER",
+  "JEWELRY",
+  "BOOKS",
+  "FOOD",
+] as const;
+
 export const addAndUpdateProductValidation = z.object({
   title: z.string().trim().min(3, "Title should be at least 3 characters long"),
   description: z
@@ -10,6 +20,11 @@ export const addAndUpdateProductValidation = z.object({
 
   price: z.string(),
   amount: z.string().optional(),
+  // categories: z.array(z.string()).or(z.string()).optional(),
+  categories: z
+    .array(z.enum(CATEGORY_OPTIONS))
+    .min(1)
+    .or(z.enum(CATEGORY_OPTIONS)),
 });
 
 export const updateAmpuntOfProduct = z.object({
@@ -27,4 +42,8 @@ export const UpdateProductValidation = z.object({
   price: z.string(),
   amount: z.string(),
   photos: z.array(z.string()).or(z.string()).optional(),
+  categories: z
+    .array(z.enum(CATEGORY_OPTIONS))
+    .min(1)
+    .or(z.enum(CATEGORY_OPTIONS)),
 });
