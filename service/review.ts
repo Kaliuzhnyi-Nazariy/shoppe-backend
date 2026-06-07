@@ -1,4 +1,5 @@
-import { Prisma } from "../generated/prisma";
+import { Prisma } from "@prisma/client";
+// import { Prisma } from "../generated/prisma";
 import { ensureExists, errorHandler } from "../helpers";
 import { prisma } from "../lib/prisma";
 

@@ -1,5 +1,4 @@
 import { Categories } from "@prisma/client";
-import { Product } from "../generated/prisma";
 import {
   cloudinaryDelete,
   ensureProductExists,
