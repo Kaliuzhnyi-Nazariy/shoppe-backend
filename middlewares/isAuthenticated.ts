@@ -4,7 +4,12 @@ import { jwtVerify } from "jose";
 import { CustomRequest } from "../interfaces/customRequest";
 
 const { JWT_SECRET } = process.env;
-const secret = new TextEncoder().encode(JWT_SECRET!);
+
+if (!JWT_SECRET) {
+  throw errorHandler(500, "No jwt secret for auth");
+}
+
+const secret = new TextEncoder().encode(JWT_SECRET);
 
 export const isAuthenticated = async (
   req: CustomRequest,

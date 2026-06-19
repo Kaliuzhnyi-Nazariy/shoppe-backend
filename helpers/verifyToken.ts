@@ -1,6 +1,11 @@
 import { jwtVerify } from "jose";
+import errorHandler from "./errorHandler";
 
 const { JWT_SECRET } = process.env;
+
+if (!JWT_SECRET) {
+  throw errorHandler(500, "No jwt secret in verify");
+}
 
 export const verifyTokenHelper = async (
   token: string,
@@ -9,9 +14,7 @@ export const verifyTokenHelper = async (
 
   if (bearer !== "Bearer") return null;
 
-  console.log({ tokenValue });
-
-  const secret = new TextEncoder().encode(JWT_SECRET!);
+  const secret = new TextEncoder().encode(JWT_SECRET);
 
   const { payload } = await jwtVerify(tokenValue, secret);
 
