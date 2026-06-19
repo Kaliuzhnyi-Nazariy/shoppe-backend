@@ -1,6 +1,15 @@
 import Mailjet from "node-mailjet";
+import errorHandler from "./errorHandler";
 
 const { API_KEY_MAIL, SECRET_KEY_MAIL } = process.env;
+
+if (!API_KEY_MAIL) {
+  throw errorHandler(500, "No mail api key ");
+}
+
+if (!SECRET_KEY_MAIL) {
+  throw errorHandler(500, "No secret mail key");
+}
 
 const mailjet = Mailjet.apiConnect(API_KEY_MAIL!, SECRET_KEY_MAIL!);
 
@@ -12,6 +21,21 @@ interface MailData {
 
 export interface MailResult {
   ok: boolean;
+}
+
+interface MailjetError extends Error {
+  statusCode: number;
+  status: number; // Often mirrors statusCode
+  errorMessage?: string; // Detailed message from Mailjet API
+}
+
+function isMailjetError(error: unknown): error is MailjetError {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "statusCode" in error &&
+    typeof (error as any).statusCode === "number"
+  );
 }
 
 export const sendEmail = async ({ email, fullName, token }: MailData) => {
@@ -79,7 +103,16 @@ export const sendEmail = async ({ email, fullName, token }: MailData) => {
     });
 
     return;
-  } catch (error) {
-    return;
+  } catch (error: unknown) {
+    if (isMailjetError(error)) {
+      const code = error.statusCode;
+      const message = error.errorMessage || error.message;
+
+      throw errorHandler(code, message);
+    } else if (error instanceof Error) {
+      throw errorHandler(500, error.message);
+    } else {
+      throw errorHandler(500, "Sth went wrong");
+    }
   }
 };

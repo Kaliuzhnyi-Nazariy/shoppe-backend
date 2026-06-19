@@ -1,7 +1,12 @@
 import { Request } from "express";
 import { jwtVerify } from "jose";
+import errorHandler from "./errorHandler";
 
 const { JWT_SECRET } = process.env;
+
+if (!JWT_SECRET) {
+  throw errorHandler(500, "No jwt secret");
+}
 
 export const isGuestMode = async (
   req: Request,
@@ -14,7 +19,7 @@ export const isGuestMode = async (
 
   if (bearer !== "Bearer") return { id: null, role: null };
 
-  const secret = new TextEncoder().encode(JWT_SECRET!);
+  const secret = new TextEncoder().encode(JWT_SECRET);
 
   const { payload } = await jwtVerify(tokenValue, secret);
 

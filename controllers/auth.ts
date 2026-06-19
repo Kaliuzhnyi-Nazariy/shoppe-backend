@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import authService from "../service/auth";
 import {
   controllerWrapper,
-  cookieSettings,
   errorHandler,
   getParam,
   getUserData,
