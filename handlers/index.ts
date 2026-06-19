@@ -1,4 +1,4 @@
 import { notFoundRouteHandler } from "./routeHandler";
-import { errorHandler } from "./errorHandler";
+import { errorHandlerMiddleware } from "./errorHandlerMiddleware";
 
-export { notFoundRouteHandler, errorHandler };
+export { notFoundRouteHandler, errorHandlerMiddleware };
