@@ -1,5 +1,6 @@
 // customer
 
+import { OrderStatus } from "@prisma/client";
 import { errorHandler } from "../helpers";
 import { PlaceOrderBody } from "../interfaces/order";
 import { prisma } from "../lib/prisma";
@@ -170,7 +171,8 @@ const cancelOrder = async (orderId: string) => {
 
 const updateOrderStatus = async (
   orderId: string,
-  // status: "paid" | "shipped" | "delivered" | "canceled",
+  status?: OrderStatus,
+  // status?: "paid" | "shipped" | "delivered" | "canceled" | "shipping",
 ) => {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
 
@@ -190,7 +192,7 @@ const updateOrderStatus = async (
 
   return await prisma.order.update({
     where: { id: orderId, status: currentOrder },
-    data: { status: nextStatus() },
+    data: { status: status ? status : nextStatus() },
   });
 };
 
@@ -232,6 +234,54 @@ const getOrders = async ({
   });
 };
 
+// new model
+
+const createOrder = async ({
+  userId,
+  orderData,
+}: {
+  userId: string | null;
+  orderData: PlaceOrderBody;
+}) => {
+  const order = await prisma.order.create({
+    data: {
+      buyerId: userId,
+      buyerEmail: orderData.buyerEmail,
+      contactNumber: orderData.contactNumber,
+      totalPrice: orderData.totalPrice,
+      paymentMethod: orderData.paymentMethod,
+      billingFirstName: orderData.billingAddress.firstName,
+      billingLastName: orderData.billingAddress.lastName,
+      billingCompanyName: orderData.billingAddress.companyName,
+      billingStreet: orderData.billingAddress.streetAddress,
+      billingCity: orderData.billingAddress.city,
+      billingPostcode: orderData.billingAddress.postcode,
+      billingCountry: orderData.billingAddress.country,
+      billingPhone: orderData.billingAddress.phone,
+      billingEmail: orderData.billingAddress.email,
+      shippingFirstName: orderData.shippingAddress.firstName,
+      shippingLastName: orderData.shippingAddress.lastName,
+      shippingCompanyName: orderData.shippingAddress.companyName,
+      shippingStreet: orderData.shippingAddress.streetAddress,
+      shippingCity: orderData.shippingAddress.city,
+      shippingPostcode: orderData.shippingAddress.postcode,
+      shippingCountry: orderData.shippingAddress.country,
+      shippingPhone: orderData.shippingAddress.phone,
+      shippingEmail: orderData.shippingAddress.email,
+      items: {
+        create: orderData.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          productTitle: item.productTitle,
+        })),
+      },
+    },
+  });
+
+  return order;
+};
+
 export default {
   getMyOrders,
   getOrderById,
@@ -240,4 +290,6 @@ export default {
   getOrders,
   updateOrderStatus,
   deleteAllOrders,
+  // trying
+  createOrder,
 };
