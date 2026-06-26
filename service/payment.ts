@@ -2,8 +2,7 @@ import { errorHandler } from "../helpers";
 import { OrderPlaceProductsItem } from "../interfaces/order";
 import Stripe from "stripe";
 import { prisma } from "../lib/prisma";
-import { PaymentMethods } from "../generated/prisma";
-import { PaymentStatus } from "@prisma/client";
+import { PaymentStatus, PaymentMethods } from "@prisma/client";
 
 const { STRIPE_SECRET_KEY, FRONTEND_URL, ENVIRONMENT } = process.env;
 
