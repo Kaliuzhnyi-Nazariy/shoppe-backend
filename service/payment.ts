@@ -28,14 +28,8 @@ const createCheckoutStripeSession = async (
     quantity: p.quantity,
   }));
 
-  console.log(
-    ENVIRONMENT === "production"
-      ? FRONTEND_URL + "/order/success/" + orderId
-      : "http://localhost:5173/order/success/" + orderId,
-  );
-
   const session = await stripeClient.checkout.sessions.create({
-    payment_method_types: ["card", "blik"],
+    payment_method_types: ["card"],
     line_items: lineItems,
     mode: "payment",
     success_url:
