@@ -113,7 +113,6 @@ const handleStripeWebhook = async (data: Buffer, signature: string) => {
 
     switch (event.type) {
       case "checkout.session.completed":
-        console.log("metadata: "), event.data.object.metadata;
         const paymentId = event.data.object.metadata?.paymentId;
         const orderId = event.data.object.metadata?.orderId;
 
