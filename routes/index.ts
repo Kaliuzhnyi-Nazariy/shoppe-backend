@@ -8,6 +8,7 @@ import cartRoutes from "./cart";
 import addressRoutes from "./address";
 import downloadRoutes from "./download";
 import reviewsRoutes from "./reviews";
+import paymentsRoutes from "./payments";
 import { errorHandlerMiddleware, notFoundRouteHandler } from "../handlers";
 
 const router = Router();
@@ -27,6 +28,8 @@ router.use("/api/address", addressRoutes);
 router.use("/api/downloads", downloadRoutes);
 
 router.use("/api/reviews", reviewsRoutes);
+
+router.use("/api/payments", paymentsRoutes);
 
 router.use(notFoundRouteHandler);
 
