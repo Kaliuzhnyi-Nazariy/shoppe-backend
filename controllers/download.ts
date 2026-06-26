@@ -14,20 +14,6 @@ const getDownloads = async (
   res.status(200).json(downloads);
 };
 
-// const postDownloads = async () => {};
-
-// const deleteDownloads = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   const { id } = getUserData(req);
-
-//   await service.deleteDownload(id);
-
-//   res.sendStatus(204);
-// };
-
 const deleteDownloadsById = async (
   req: Request,
   res: Response,
@@ -42,7 +28,5 @@ const deleteDownloadsById = async (
 
 export default {
   getDownloads: controllerWrapper(getDownloads),
-  // postDownloads: controllerWrapper(postDownloads),
-  // deleteDownloads: controllerWrapper(deleteDownloads),
   deleteDownloadsById: controllerWrapper(deleteDownloadsById),
 };

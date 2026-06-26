@@ -47,7 +47,6 @@ const stripeWebhookController = async (req: Request, res: Response) => {
   }
 
   const sign = Array.isArray(signature) ? signature[0] : signature;
-  // const signature = req.headers["stripe-signature"];
   await paymentService.handleStripeWebhook(req.body, sign);
 
   res.sendStatus(200);

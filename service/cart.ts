@@ -1,4 +1,5 @@
-import { ensureExists, errorHandler } from "../helpers";
+import { ensureExists } from "../helpers/ensureExists";
+import errorHandler from "../helpers/errorHandler";
 import { AddCartItem, ICartItem } from "../interfaces/cart";
 import { prisma } from "../lib/prisma";
 
@@ -189,97 +190,6 @@ const deleteCart = async (userId: string) => {
   return;
 };
 
-// const addMany = async (userId: string, products: AddCartItem[]) => {
-// const cart = await ensureExists({
-//   model: prisma.cart,
-//   where: { userId },
-//   entityName: "Cart",
-// });
-
-//   const cartItems = await prisma.cartItem.findMany({
-//     where: { cartId: cart.id },
-//   });
-
-//   const productIds = products.map((p) => p.productId);
-
-//   const DBProductsData = [];
-
-//   for (let i = 0; i <= productIds.length - 1; i++) {
-//     const DBProduct = await prisma.product.findUnique({
-//       where: { id: productIds[i] },
-//       select: { id: true, amount: true, price: true },
-//     });
-
-//     DBProductsData.push(DBProduct);
-//   }
-
-//   console.log({ DBProductsData });
-
-//   const existingItems = [];
-
-//   for (let i = 0; i < DBProductsData.length; i++) {
-//     const existingItem = await prisma.cartItem.findUnique({
-//       where: {
-//         cartId_productId: {
-//           cartId: cart.id,
-//           productId: DBProductsData[i]?.id || "",
-//         },
-//       },
-//     });
-
-//     if (existingItem) {
-//       existingItems.push(existingItem);
-//     }
-//   }
-
-//   console.log({ existingItems });
-
-//   // if (existingItems.length > 0) {
-//   //   for (let i = 0; i < existingItems.length; i++) {
-//   //     const product = products.find((prod) => {
-//   //       return prod.productId == (existingItems[i]?.id as { id: string });
-//   //     }) as unknown as { id: string; quantity: number };
-
-//   //     const totalQuantity =
-//   //       (existingItems[i]?.quantity || 0) + product.quantity;
-
-//   //     const amountProductHas =
-//   //       DBProductsData &&
-//   //       DBProductsData.find((prod) => prod && prod.id === existingItems[i]?.id);
-
-//   //     if (totalQuantity > productDB.amount) {
-//   //       throw errorHandler(400, "Not enough stock");
-//   //     }
-//   //   }
-//   // }
-
-//   const res = [];
-
-//   for (let i = 0; i < products.length; i++) {
-//     const productFromDbData = DBProductsData.find(
-//       (dbprod) => dbprod?.id == products[i].productId,
-//     );
-
-//     const newCartItem = await prisma.cartItem.upsert({
-//       where: {
-//         cartId_productId: { cartId: cart.id, productId: products[i].productId },
-//       },
-//       update: { quantity: { increment: products[i].quantity } },
-//       create: {
-//         cartId: cart.id,
-//         productId: products[i].productId,
-//         quantity: products[i].quantity,
-//         price: productFromDbData?.price || 0,
-//         userId: userId,
-//       },
-//     });
-//     res.push(newCartItem);
-//   }
-
-//   return res;
-// };
-
-// const addMany = async (userId: string, products: AddCartItem[]) => {
 const addMany = async (userId: string, products: ICartItem[]) => {
   const cart = await ensureExists({
     model: prisma.cart,
@@ -287,28 +197,9 @@ const addMany = async (userId: string, products: ICartItem[]) => {
     entityName: "Cart",
   });
 
-  // console.log({ products });
-  // // console.log(products.map)
-  // const productIds = products.map((ci) => {
-  //   return ci.product.id;
-  // });
-
-  // console.log({ productIds });
-
-  // return;
-
-  // const productIds = products.map((p) => p.productId);
-
   const productIds = products.map((ci) => {
     return ci.product.id;
   });
-
-  // const productsMap = new Map(
-  //   products.map((ci) => [
-  //     ci.id,
-  //     { productId: ci.product.id, quantity: ci.quantity },
-  //   ]),
-  // );
 
   const productsMap = products.map((ci) => {
     return {
@@ -350,7 +241,6 @@ const addMany = async (userId: string, products: ICartItem[]) => {
   );
 
   const operations = productsMap.map((p) => {
-    // const operations = products.map((p) => {
     const dbProduct = productMap.get(p.productId);
 
     if (!dbProduct) throw errorHandler(404, "Product is not found");

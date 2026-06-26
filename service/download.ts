@@ -31,14 +31,6 @@ const postDownload = async (
   });
 };
 
-// const deleteDownload = async (id: string) => {
-//   return await prisma.downloads.deleteMany({
-//     where: {
-//       userId: id,
-//     },
-//   });
-// };
-
 const deleteById = async (id: string) => {
   return await prisma.downloads.delete({ where: { id } });
 };
@@ -46,6 +38,5 @@ const deleteById = async (id: string) => {
 export default {
   getDownloads,
   postDownload,
-  // deleteDownload,
   deleteById,
 };

@@ -28,12 +28,10 @@ const createCheckoutStripeSession = async (
     },
     quantity: p.quantity,
   }));
-  // console.log(lineItems);
 
   const session = await stripeClient.checkout.sessions.create({
     payment_method_types: ["card", "blik"],
     line_items: lineItems,
-    // line_items: lineItems,
     mode: "payment",
     success_url:
       ENVIRONMENT === "production"
@@ -50,7 +48,6 @@ const createCheckoutStripeSession = async (
   });
 
   return { url: session.url, id: session.id };
-  // return "";
 };
 
 const createPayment = async ({
@@ -65,10 +62,9 @@ const createPayment = async ({
   return await prisma.payment.create({
     data: {
       orderId,
-      method, //session.payment_method_types ['card']
+      method,
       amount,
-      status: "pending", //change to what stripe proposes
-      // status: session.payment_status,
+      status: "pending",
     },
   });
 };
@@ -142,12 +138,6 @@ const handleStripeWebhook = async (data: Buffer, signature: string) => {
             throw errorHandler(500);
           }
 
-          // const productIds = order.items.map((item) => item.productId);
-
-          // const products = await tx.product.findMany({
-          //   where: { id: { in: productIds } },
-          // });
-
           for (const item of order.items) {
             const product = await tx.product.findUnique({
               where: { id: item.productId },
@@ -186,42 +176,6 @@ const handleStripeWebhook = async (data: Buffer, signature: string) => {
     throw error;
   }
 };
-
-// const updateCheckoutStripeSession = async (
-//   products: OrderPlaceProductsItem[],
-// ) => {
-//   const lineItems = products.map((p) => ({
-//     price_data: {
-//       currency: "usd",
-//       product_data: {
-//         name: p.productTitle,
-//       },
-//       unit_amount: Math.round(p.price * 100),
-//     },
-//     quantity: p.quantity,
-//   }));
-//   // console.log(lineItems);
-
-//   const session = await stripeClient.checkout.sessions.update({
-//     payment_method_types: ["card", "blik"],
-//     line_items: lineItems,
-//     // line_items: lineItems,
-//     mode: "payment",
-//     success_url:
-//       ENVIRONMENT === "production" ? FRONTEND_URL : "http://localhost:5173",
-//     cancel_url:
-//       ENVIRONMENT === "production" ? FRONTEND_URL : "http://localhost:5173",
-//   });
-
-//   console.log(session.amount_total);
-//   console.log("subtotal: ", session.amount_subtotal);
-//   console.log(session.payment_method_types);
-//   console.log(session.payment_status);
-//   console.log(session.id);
-
-//   return session.url;
-//   // return "";
-// };
 
 export default {
   createCheckoutStripeSession,
