@@ -34,7 +34,7 @@ const createCheckoutStripeSession = async (
     mode: "payment",
     success_url:
       ENVIRONMENT === "production"
-        ? FRONTEND_URL + "/order/success" + orderId
+        ? FRONTEND_URL + "/order/success/" + orderId
         : "http://localhost:5173/order/success/" + orderId,
     cancel_url:
       ENVIRONMENT === "production"
