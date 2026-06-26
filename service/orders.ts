@@ -160,20 +160,7 @@ const cancelOrder = async (orderId: string) => {
 
 // admin
 
-// const getOrders = async () => {
-//   return await prisma.order.findMany({
-//     include: {
-//       items: true,
-//       payment: true,
-//     },
-//   });
-// };
-
-const updateOrderStatus = async (
-  orderId: string,
-  status?: OrderStatus,
-  // status?: "paid" | "shipped" | "delivered" | "canceled" | "shipping",
-) => {
+const updateOrderStatus = async (orderId: string, status?: OrderStatus) => {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
 
   if (!order) throw errorHandler(404, "order is not found");
@@ -200,8 +187,6 @@ const deleteAllOrders = async () => {
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
 };
-
-//
 
 const getOrders = async ({
   id,
@@ -291,6 +276,5 @@ export default {
   getOrders,
   updateOrderStatus,
   deleteAllOrders,
-  // trying
   createOrder,
 };

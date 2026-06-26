@@ -42,7 +42,6 @@ app.use((req, res, next) => {
   }
   express.json({ limit: "5mb" })(req, res, next);
 });
-// app.use(express.json({ limit: "5mb" }));
 
 app.use(routes);
 

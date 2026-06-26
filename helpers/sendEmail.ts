@@ -1,7 +1,7 @@
 import Mailjet from "node-mailjet";
 import errorHandler from "./errorHandler";
 
-const { API_KEY_MAIL, SECRET_KEY_MAIL } = process.env;
+const { API_KEY_MAIL, SECRET_KEY_MAIL, FRONTEND_URL } = process.env;
 
 if (!API_KEY_MAIL) {
   throw errorHandler(500, "No mail api key ");
@@ -9,6 +9,10 @@ if (!API_KEY_MAIL) {
 
 if (!SECRET_KEY_MAIL) {
   throw errorHandler(500, "No secret mail key");
+}
+
+if (!FRONTEND_URL) {
+  throw errorHandler(500, "No frontend link");
 }
 
 const mailjet = Mailjet.apiConnect(API_KEY_MAIL!, SECRET_KEY_MAIL!);
@@ -25,8 +29,8 @@ export interface MailResult {
 
 interface MailjetError extends Error {
   statusCode: number;
-  status: number; // Often mirrors statusCode
-  errorMessage?: string; // Detailed message from Mailjet API
+  status: number;
+  errorMessage?: string;
 }
 
 function isMailjetError(error: unknown): error is MailjetError {
@@ -69,7 +73,7 @@ export const sendEmail = async ({ email, fullName, token }: MailData) => {
       </p>
 
       <a 
-        href="http://localhost:5173/password/set/${token}" 
+        href="${FRONTEND_URL}/password/set/${token}" 
         target="_blank"
         style="
           display: inline-block;

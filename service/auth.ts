@@ -42,8 +42,8 @@ const signUp = async ({
   // create token and return it (token will contain role and id)
 
   const payload = {
-    id: res.id, // new user id
-    role: res.role, // new user role
+    id: res.id,
+    role: res.role,
   };
 
   const token = jwt.sign(payload, JWT_SECRET!, { expiresIn: "24h" });
@@ -54,8 +54,7 @@ const signUp = async ({
 const signIn = async ({
   email,
   password,
-}: // }: SignIn): Promise<{ token: string; role: "customer" | "admin" }> => {
-SignIn): Promise<{ token: string }> => {
+}: SignIn): Promise<{ token: string }> => {
   // check if user is exist in db
   const isUser = await prisma.user.findUnique({ where: { email } });
 
@@ -68,16 +67,14 @@ SignIn): Promise<{ token: string }> => {
   }
 
   const payload = {
-    id: isUser.id, // taken from user
-    role: isUser.role, //also from user
+    id: isUser.id,
+    role: isUser.role,
   };
 
   const token = jwt.sign(payload, JWT_SECRET!, { expiresIn: "24h" });
 
   return { token };
 };
-
-// const signOut = async (userId: string) => {};
 
 const forgetPassword = async (email: string) => {
   // check if user exists in db
@@ -123,7 +120,6 @@ const forgetPassword = async (email: string) => {
   await sendEmail({
     email: isUser.email,
     name: userFullName,
-    // token
   });
 
   return { token };
@@ -215,7 +211,6 @@ const createCheckoutUser = async ({
     const { id: resetPasswordId } = await prisma.passwordResetTokens.create({
       data: {
         userId: user.id,
-        // token: hashedPasswordToken,
         expiresAt,
       },
     });
@@ -250,11 +245,9 @@ const createCheckoutUser = async ({
 };
 
 const setPassword = async ({
-  // userId,
   tokenId,
   password,
 }: {
-  // userId: string;
   tokenId: string;
   password: string;
 }) => {
@@ -341,7 +334,6 @@ const askResetPassword = async (userId: string) => {
 export default {
   signUp,
   signIn,
-  // signOut,
   forgetPassword,
   resetPassword,
   createCheckoutUser,

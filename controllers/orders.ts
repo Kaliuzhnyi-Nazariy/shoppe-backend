@@ -55,11 +55,6 @@ const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
 
 // admin
 
-// const getOrders = async (req: Request, res: Response, next: NextFunction) => {
-// const orders = await orderService.getOrders();
-// res.status(200).json(orders);
-// };
-
 const updateOrderStatus = async (
   req: Request,
   res: Response,

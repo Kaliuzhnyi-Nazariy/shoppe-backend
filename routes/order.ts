@@ -13,16 +13,10 @@ router.get(
   authorize(["admin", "customer"]),
   ctrl.getOrders,
 );
-// router.get("/all", isAuthenticated, authorize(["admin"]), ctrl.getOrders);
 
 router.get("/:orderId", ctrl.getOrderById);
 
-router.post(
-  "/place",
-  // isAuthenticated,
-  validateBody(orderValidation),
-  ctrl.placeOrder,
-);
+router.post("/place", validateBody(orderValidation), ctrl.placeOrder);
 
 router.patch("/cancel/:orderId", isAuthenticated, ctrl.cancelOrder);
 
