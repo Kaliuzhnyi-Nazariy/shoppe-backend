@@ -276,6 +276,7 @@ const createOrder = async ({
           productTitle: item.productTitle,
         })),
       },
+      notes: orderData.notes,
     },
   });
 
