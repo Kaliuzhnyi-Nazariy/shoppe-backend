@@ -31,8 +31,12 @@ const createStripeCheckout = async (
       paymentId: payment.id,
       provider: stripe.id,
     });
+
+    console.log(stripe);
+
     res.status(201).json({ url: stripe.url });
   } catch (error) {
+    console.log(error);
     await orderService.updateOrderStatus(order.id, "canceled");
 
     throw error;
