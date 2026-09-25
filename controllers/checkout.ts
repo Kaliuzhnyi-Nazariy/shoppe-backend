@@ -20,8 +20,6 @@ const createStripeCheckout = async (
     method: order.paymentMethod,
   });
 
-  console.log(req.body);
-
   try {
     const stripe = await paymentService.createCheckoutStripeSession(
       order.id,
